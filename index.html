@@ -638,7 +638,7 @@
     <div class="content-container">
 
         <section id="hero" class="section">
-            <img src="images/me.jpg" alt="Sibusiso Ntuli" class="profile-pic" onerror="this.src='https://placehold.co/150x150/000000/00FF41?text=Profile+Pic'; this.onerror=null;">
+            <img src="https://placehold.co/150x150/000000/00FF41?text=SN" alt="Sibusiso Ntuli" class="profile-pic" onerror="this.src='https://placehold.co/150x150/000000/00FF41?text=Profile+Pic'; this.onerror=null;">
             <h1>Sibusiso Ntuli</h1>
             <p class="subtitle">Junior Software Engineer</p>
             <div>
@@ -865,18 +865,18 @@
                 <li>Solidity</li>
                 <li>Docker</li>
                 <li>Agile Methodologies</li>
-                <li>AWS / Azure / GCP</li>
-                <li>Json</li>
-                <li>WPF</li> 
-                <li>MongoDB</li> 
-                <li>Firebase</li> 
+                <li>AWS / Azure / GCP</li> {/* Kept example Cloud skill */}
+                <li>Json</li> {/* From old list */}
+                <li>WPF</li> {/* From old list */}
+                <li>MongoDB</li> {/* From old list */}
+                <li>Firebase</li> {/* From old list */}
             </ul>
         </section>
 
         <section id="contact" class="section background-alt">
             <h2 class="heading">Establish Connection</h2>
             <p>Ready to unplug or discuss a potential collaboration? Send a signal.</p>
-            <form class="contact-form" action="https://formspree.io/f/mzzejlqa" method="POST">
+            <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
                 <input type="text" name="name" placeholder="Your Name / Alias" required>
                 <input type="email" name="email" placeholder="Your Signal Path (Email)" required>
                 <textarea name="message" placeholder="Your Message..." rows="5" required></textarea>
@@ -887,8 +887,8 @@
                  <p>
                      <a href="https://www.linkedin.com/in/sibusiso-n-b55638247" target="_blank" rel="noopener">LinkedIn</a> |
                      <a href="https://github.com/CODIEX0" target="_blank" rel="noopener">GitHub</a> |
-                     <a href="https://stackoverflow.com/users/23134825/codiex0" rel="noopener" target="_blank">Stack Overflow</a> | 
-                     <a href="https://twitter.com/CodyX07456802" rel="noopener" target="_blank">Twitter</a> | 
+                     <a href="https://stackoverflow.com/users/23134825/codiex0" rel="noopener" target="_blank">Stack Overflow</a> | {/* Added from old footer */}
+                     <a href="https://twitter.com/CodyX07456802" rel="noopener" target="_blank">Twitter</a> | {/* Added from old footer */}
                      <span>Email: codyntuli@gmail.com</span> |
                      <span>Phone: 0789305982</span>
                  </p>
@@ -902,10 +902,11 @@
         const canvas = document.getElementById('matrix-canvas');
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true }); // alpha: true for transparent background
+        // Use alpha: true for transparent background, antialias for smoother points
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
 
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio); // Adjust for high DPI screens
+        renderer.setPixelRatio(window.devicePixelRatio);
 
         // --- Lighting ---
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -915,50 +916,140 @@
         scene.add(pointLight);
 
         // --- Digital Rain Parameters ---
-        const particleCount = 8000;
-        const particleSize = 0.15;
+        const particleCount = 8000; // Keep particle count reasonable
+        const particleSize = 24; // Size in pixels for the texture points
         const fallSpeed = 0.03;
-        const characterSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ<>{}[]()/*&^%$#@!';
-        const streamLength = 25;
+        const streamLength = 25; // Affects leading char probability
 
+        // --- Create Texture Atlas for '0' and '1' ---
+        function createTextTextureAtlas() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const charSize = 64; // Texture size for each character (power of 2 preferred)
+            canvas.width = charSize * 2; // Width for '0' and '1'
+            canvas.height = charSize;
+
+            context.font = `bold ${charSize * 0.8}px Courier New, monospace`; // Adjust font size relative to charSize
+            context.fillStyle = '#00FF41'; // Matrix green
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+
+            // Draw '0' on the left half
+            context.fillText('0', charSize / 2, charSize / 2);
+            // Draw '1' on the right half
+            context.fillText('1', charSize * 1.5, charSize / 2);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+        const atlasTexture = createTextTextureAtlas();
+
+        // --- Create Rain Particle Geometry ---
         const particlesGeometry = new THREE.BufferGeometry();
         const positions = [];
-        const colors = [];
         const velocities = [];
+        const isZeroAttribute = []; // Custom attribute: 0.0 for '0', 1.0 for '1'
+        const isLeadingAttribute = []; // Custom attribute for leading char: 1.0 if leading, 0.0 otherwise
 
         const matrixGreen = new THREE.Color(0x00FF41);
-        const brightGreen = new THREE.Color(0x90EE90);
-        const white = new THREE.Color(0xFFFFFF);
+        const white = new THREE.Color(0xFFFFFF); // For leading char tint
 
-        // --- Create Rain Particles ---
         for (let i = 0; i < particleCount; i++) {
             const x = THREE.MathUtils.randFloatSpread(100);
             const y = THREE.MathUtils.randFloat(0, 100);
             const z = THREE.MathUtils.randFloatSpread(50);
             positions.push(x, y, z);
+
+            const isLeading = Math.random() < 1 / streamLength;
+            isLeadingAttribute.push(isLeading ? 1.0 : 0.0);
+
             velocities.push({
                 speed: THREE.MathUtils.randFloat(fallSpeed * 0.5, fallSpeed * 1.5),
-                isLeading: Math.random() < 1 / streamLength
+                // Store leading status also here for easier reset logic
+                isLeading: isLeading
             });
-            colors.push(matrixGreen.r, matrixGreen.g, matrixGreen.b);
+
+            // Randomly assign 0 or 1
+            isZeroAttribute.push(Math.random() > 0.5 ? 1.0 : 0.0);
         }
 
         particlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        particlesGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        particlesGeometry.setAttribute('isZero', new THREE.Float32BufferAttribute(isZeroAttribute, 1));
+        particlesGeometry.setAttribute('isLeading', new THREE.Float32BufferAttribute(isLeadingAttribute, 1));
 
+
+        // --- Create Rain Particle Material with Shader Modification ---
         const particlesMaterial = new THREE.PointsMaterial({
             size: particleSize,
-            vertexColors: true,
+            map: atlasTexture,
             transparent: true,
-            opacity: 0.7,
-            blending: THREE.AdditiveBlending,
-            sizeAttenuation: true
+            alphaTest: 0.1, // Discard transparent pixels in texture
+            blending: THREE.AdditiveBlending, // Keep the glow effect
+            sizeAttenuation: true, // Particles smaller further away
+            // vertexColors: false // We are not using vertex colors anymore
         });
+
+        // Modify the shader before compilation
+        particlesMaterial.onBeforeCompile = (shader) => {
+            // Add attributes and varyings to the shader code
+            shader.vertexShader = `
+                attribute float isZero;
+                attribute float isLeading;
+                varying float vIsZero;
+                varying float vIsLeading;
+            ` + shader.vertexShader;
+
+            shader.vertexShader = shader.vertexShader.replace(
+                `#include <clipping_planes_vertex>`,
+                `#include <clipping_planes_vertex>
+                vIsZero = isZero; // Pass attribute to fragment shader
+                vIsLeading = isLeading; // Pass leading status
+                `
+            );
+
+            shader.fragmentShader = `
+                varying float vIsZero;
+                varying float vIsLeading;
+            ` + shader.fragmentShader;
+
+            // Modify the fragment shader to select '0' or '1' from the atlas
+            shader.fragmentShader = shader.fragmentShader.replace(
+                `#include <map_particle_fragment>`,
+                `
+                #ifdef USE_MAP
+                    // Calculate UV coordinates based on vIsZero
+                    // mappedUv is the default UV for the point sprite (usually 0-1)
+                    vec2 adjustedUv = (mappedUv * vec2(0.5, 1.0)) + vec2(vIsZero * 0.5, 0.0);
+                    vec4 mapTexel = texture2D( map, adjustedUv );
+
+                    // --- Customization ---
+                    // Make leading characters brighter (white tint)
+                    // Mix the texture color with white based on vIsLeading
+                    vec3 leadingColor = vec3(1.0, 1.0, 1.0); // White
+                    float leadingAmount = smoothstep(0.9, 1.0, vIsLeading); // Make transition smooth if needed, here sharp
+                    vec3 finalColor = mix(mapTexel.rgb, leadingColor, leadingAmount * 0.8); // Mix 80% white for leading
+
+                    // Apply the final color, keeping original alpha
+                    diffuseColor *= vec4( finalColor, mapTexel.a );
+
+                    // Optional: Make non-leading characters slightly dimmer
+                    // diffuseColor.rgb *= mix(0.7, 1.0, vIsLeading);
+
+                #endif
+                `
+            );
+             // console.log("Vertex Shader:\n", shader.vertexShader); // For debugging
+             // console.log("Fragment Shader:\n", shader.fragmentShader); // For debugging
+        };
+
 
         const rain = new THREE.Points(particlesGeometry, particlesMaterial);
         scene.add(rain);
 
+
         // --- UFO and Bug Setup ---
+        // (Keep UFO and Bug code exactly the same as before)
         const ufoGeometry = new THREE.ConeGeometry(0.8, 0.3, 16);
         const ufoMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.8, roughness: 0.4 });
         const ufo = new THREE.Mesh(ufoGeometry, ufoMaterial);
@@ -970,7 +1061,6 @@
         const bug = new THREE.Mesh(bugGeometry, bugMaterial);
         scene.add(bug);
 
-        // UFO/Bug Animation Variables
         let bugTargetPosition = new THREE.Vector3(
              THREE.MathUtils.randFloatSpread(40),
              THREE.MathUtils.randFloat(-20, 20),
@@ -981,6 +1071,7 @@
         let bugMoveTimer = 0;
         const bugMoveInterval = 100;
 
+
         // --- Camera Position ---
         camera.position.z = 50;
 
@@ -990,39 +1081,43 @@
 
             // --- Rain Animation ---
             const positionsAttribute = particlesGeometry.getAttribute('position');
-            const colorsAttribute = particlesGeometry.getAttribute('color');
+            const isZeroAttr = particlesGeometry.getAttribute('isZero');
+            const isLeadingAttr = particlesGeometry.getAttribute('isLeading');
             const currentPositions = positionsAttribute.array;
-            const currentColors = colorsAttribute.array;
 
             for (let i = 0; i < particleCount; i++) {
-                const i3 = i * 3;
+                const i3 = i * 3; // Position index (x, y, z)
+                const i1 = i;     // Attribute index (isZero, isLeading)
                 const velocityInfo = velocities[i];
+
+                // Move particle down
                 currentPositions[i3 + 1] -= velocityInfo.speed;
 
-                let color;
-                if (velocityInfo.isLeading) {
-                    color = white;
-                } else {
-                    const yPos = currentPositions[i3 + 1];
-                    const streamProgress = THREE.MathUtils.mapLinear(yPos, 50, -50, 0, 1);
-                    color = matrixGreen.clone().lerp(brightGreen, streamProgress * 0.5);
-                }
-
+                // Reset particle to top if it falls below screen
                 if (currentPositions[i3 + 1] < -50) {
-                    currentPositions[i3 + 1] = 50;
-                    currentPositions[i3] = THREE.MathUtils.randFloatSpread(100);
-                    velocityInfo.isLeading = Math.random() < 1 / streamLength;
-                    velocityInfo.speed = THREE.MathUtils.randFloat(fallSpeed * 0.5, fallSpeed * 1.5);
-                }
+                    currentPositions[i3 + 1] = 50; // Reset Y to top
+                    currentPositions[i3] = THREE.MathUtils.randFloatSpread(100); // Re-randomize X
 
-                currentColors[i3] = color.r;
-                currentColors[i3 + 1] = color.g;
-                currentColors[i3 + 2] = color.b;
+                    // Re-determine if leading and update attribute + velocity info
+                    velocityInfo.isLeading = Math.random() < 1 / streamLength;
+                    isLeadingAttr.setX(i1, velocityInfo.isLeading ? 1.0 : 0.0);
+
+                    // Re-randomize speed
+                    velocityInfo.speed = THREE.MathUtils.randFloat(fallSpeed * 0.5, fallSpeed * 1.5);
+
+                    // Re-randomize 0 or 1 and update attribute
+                    isZeroAttr.setX(i1, Math.random() > 0.5 ? 1.0 : 0.0);
+                }
             }
+
+            // Mark attributes as needing update
             positionsAttribute.needsUpdate = true;
-            colorsAttribute.needsUpdate = true;
+            isZeroAttr.needsUpdate = true;
+            isLeadingAttr.needsUpdate = true;
+
 
             // --- UFO and Bug Animation ---
+            // (Keep UFO and Bug animation code exactly the same as before)
             bugMoveTimer++;
             if (bugMoveTimer > bugMoveInterval) {
                 bugTargetPosition.set(
@@ -1036,6 +1131,7 @@
             ufo.position.lerp(bug.position, ufoChaseSpeed);
             ufo.rotation.z += 0.02;
             ufo.rotation.y += 0.01;
+
 
             renderer.render(scene, camera);
         }
