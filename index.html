@@ -1,424 +1,1089 @@
- <!DOCTYPE html>
-<html class="no-js" lang="en">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Portfolio for Sibusiso Sihle Ntuli</title>
-	<link rel="shortcut icon" href="favicon1.ico" type="image/x-icon">
-	<link rel="icon" href="favicon1.ico" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900" rel="stylesheet">
-    <link rel="stylesheet" href="libs/font-awesome/css/font-awesome.min.css">
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/styles.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sibusiso Ntuli - Software Engineer Portfolio</title>
+    <link rel="shortcut icon" href="favicon1.ico" type="image/x-icon">
+    <link rel="icon" href="favicon1.ico" type="image/x-icon">
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+             scroll-behavior: smooth; /* Ensure smooth scrolling for internal links */
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace; /* Matrix-like font */
+            background-color: #000000; /* Black background */
+            color: #00FF41; /* Matrix green text */
+            overflow: hidden; /* Hide scrollbars initially */
+            line-height: 1.6;
+        }
+
+        /* Style for the Three.js canvas */
+        #matrix-canvas {
+            position: fixed; /* Fixed position to stay behind content */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Ensure it's behind other content */
+        }
+
+        /* Container for the scrollable content */
+        .content-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh; /* Use viewport height */
+            overflow-y: auto; /* Allow vertical scrolling */
+            z-index: 1; /* Ensure content is above canvas */
+            scroll-behavior: smooth; /* Smooth scrolling */
+        }
+
+        /* General Section Styling */
+        .section {
+            min-height: 100vh; /* Each section takes at least full viewport height */
+            padding: 80px 10%; /* Padding top/bottom and left/right */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            /* Add a subtle dark overlay to make text more readable over the rain */
+            background-color: rgba(0, 0, 0, 0.75); /* Slightly darker overlay */
+            border-bottom: 1px solid #00FF41; /* Separator line */
+            position: relative; /* Needed for absolute positioning of elements */
+        }
+        /* Alternate background color for sections */
+        .background-alt {
+             background-color: rgba(0, 10, 0, 0.8); /* Darker green tint overlay */
+        }
+
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        /* Hero Section Specific Styling */
+        #hero {
+            background-color: transparent; /* Hero section doesn't need the overlay initially */
+            justify-content: center; /* Center vertically */
+        }
+
+        /* Profile Picture Styling */
+        .profile-pic {
+            width: 150px; /* Adjust size as needed */
+            height: 150px;
+            border-radius: 50%; /* Make it circular */
+            border: 3px solid #00FF41; /* Matrix green border */
+            margin-bottom: 25px;
+            object-fit: cover; /* Ensure image covers the area well */
+            box-shadow: 0 0 15px #00FF41; /* Add glow */
+        }
+
+        h1, h2, h3, h4 { /* Added h4 */
+            color: #ffffff; /* Brighter white for headings */
+            margin-bottom: 20px;
+            text-shadow: 0 0 5px #00FF41, 0 0 10px #00FF41; /* Green glow */
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px; /* Reduce space below h1 */
+        }
+        /* Title below name */
+        #hero p.subtitle {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            color: #00FF41; /* Green subtitle */
+            text-shadow: none;
+        }
+
+
+        h2.heading { /* Style for section headings consistent with old portfolio */
+            font-size: 2.5em; /* Larger section headings */
+            width: 100%; /* Make heading span width */
+            text-align: center;
+            margin-bottom: 50px; /* More space below heading */
+            color: #00FF41; /* Green headings */
+        }
+
+        h3 {
+             font-size: 1.6em;
+        }
+        h4 {
+            font-size: 1.2em;
+            color: #bbbbbb; /* Lighter grey for sub-titles like dates/roles */
+            text-shadow: none;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+
+
+        p, li {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            max-width: 800px; /* Limit text width for readability */
+        }
+
+        a {
+            color: #00FF41;
+            text-decoration: none;
+            border-bottom: 1px dotted #00FF41;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 8px #00FF41;
+        }
+
+        /* Button Styling (Matrix Style) */
+        .matrix-button {
+            display: inline-block;
+            background-color: transparent;
+            border: 2px solid #00FF41;
+            color: #00FF41;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            margin-top: 15px; /* Adjusted margin */
+            margin-right: 10px; /* Space between buttons */
+            text-decoration: none; /* Remove underline from button links */
+            border-bottom: none; /* Remove dotted line from button links */
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 5px #00FF41;
+        }
+
+        .matrix-button:hover {
+            background-color: #00FF41;
+            color: #000000;
+            box-shadow: 0 0 15px #00FF41, 0 0 25px #00FF41;
+            border-bottom: none; /* Ensure no border on hover */
+        }
+
+         /* Specific styling for submit button */
+         button[type="submit"] {
+            display: inline-block;
+            background-color: transparent;
+            border: 2px solid #00FF41;
+            color: #00FF41;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 5px #00FF41;
+         }
+         button[type="submit"]:hover {
+             background-color: #00FF41;
+             color: #000000;
+             box-shadow: 0 0 15px #00FF41, 0 0 25px #00FF41;
+         }
+
+
+        /* About Me Section Specific */
+        #about .container { /* Mimic container structure */
+             max-width: 1000px;
+             width: 100%;
+        }
+        #about .row {
+             display: flex;
+             flex-wrap: wrap;
+             justify-content: center;
+        }
+        #about .col-md-4, #about .col-md-8 { /* Basic column setup */
+             padding: 15px;
+        }
+        #about .col-md-4 {
+             flex: 0 0 33.33%;
+             max-width: 33.33%;
+             text-align: right;
+        }
+         #about .col-md-8 {
+             flex: 0 0 66.66%;
+             max-width: 66.66%;
+             text-align: left;
+         }
+         #about .col-md-8 p {
+             max-width: none; /* Remove max width for this paragraph */
+         }
+
+
+        /* Experience Timeline Styling (Adapted) */
+        #experience-timeline {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            padding: 30px 0;
+        }
+
+        /* Timeline line */
+        #experience-timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background-color: #00FF41; /* Matrix green line */
+            box-shadow: 0 0 5px #00FF41;
+        }
+
+        .timeline-block {
+            position: relative;
+            margin-bottom: 50px;
+            width: calc(50% - 40px); /* Adjust width for spacing */
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.85); /* Darker background */
+            border: 1px solid #00FF41;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+            text-align: left;
+        }
+
+        /* Position blocks left and right */
+        .timeline-block:nth-child(odd) {
+            float: left;
+            clear: right;
+            transform: translateX(-30px); /* Offset from center line */
+        }
+
+        .timeline-block:nth-child(even) {
+            float: right;
+            clear: left;
+             transform: translateX(30px); /* Offset from center line */
+        }
+
+        /* Clear floats */
+        #experience-timeline::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* Timeline date marker */
+        .timeline-block .timeline-marker {
+            content: '';
+            position: absolute;
+            top: 20px; /* Align with top padding */
+            width: 15px;
+            height: 15px;
+            background-color: #000;
+            border: 2px solid #00FF41;
+            border-radius: 50%;
+            z-index: 1;
+            box-shadow: 0 0 8px #00FF41;
+        }
+
+        .timeline-block:nth-child(odd) .timeline-marker {
+            right: -38px; /* Position marker on the line */
+        }
+
+        .timeline-block:nth-child(even) .timeline-marker {
+            left: -38px; /* Position marker on the line */
+        }
+
+        .timeline-block h3 {
+            margin-top: 0;
+            color: #00FF41; /* Green title */
+            text-shadow: none;
+            font-size: 1.4em;
+            margin-bottom: 5px;
+        }
+         .timeline-block h4 {
+             font-size: 1.1em;
+             color: #ccc; /* Lighter subtitle */
+             margin-bottom: 15px;
+         }
+         .timeline-block p {
+             font-size: 1em;
+             line-height: 1.5;
+             margin-bottom: 0;
+             max-width: none;
+         }
+         .timeline-block p br { /* Improve spacing after breaks */
+             content: "";
+             display: block;
+             margin-bottom: 8px;
+         }
+
+         /* Education Block Styling */
+         .education-block {
+             background-color: rgba(0, 0, 0, 0.8);
+             border: 1px solid #00FF41;
+             padding: 25px;
+             margin-bottom: 30px;
+             max-width: 700px;
+             width: 100%;
+             text-align: left;
+             transition: box-shadow 0.3s ease;
+         }
+         .education-block:hover {
+              box-shadow: 0 0 15px #00FF41;
+         }
+         .education-block h3 {
+             margin-top: 0;
+             margin-bottom: 5px;
+             color: #00FF41;
+             text-shadow: none;
+             font-size: 1.4em;
+         }
+         .education-block .education-date {
+             display: block;
+             color: #ccc;
+             margin-bottom: 10px;
+             font-size: 0.9em;
+         }
+         .education-block h4 {
+             font-size: 1.1em;
+             color: #ffffff;
+             margin-bottom: 15px;
+         }
+          .education-block p {
+              font-size: 1em;
+              max-width: none;
+              margin-bottom: 10px; /* Space before links */
+          }
+          .education-block p a {
+              display: inline-block; /* Make links blocky */
+              margin-right: 15px; /* Space out links */
+              margin-bottom: 5px;
+          }
+
+
+        /* Project Card Styling (Adapted from old portfolio) */
+        #projects .container {
+             max-width: 1200px; /* Allow wider container for projects */
+             width: 100%;
+        }
+         #projects .row {
+             display: flex;
+             flex-wrap: wrap;
+             justify-content: center;
+             gap: 30px; /* Add gap between project cards */
+         }
+
+        .project {
+            background: rgba(0, 0, 0, 0.85); /* Dark background */
+            border: 1px solid #00FF41;
+            box-shadow: 0 5px 15px rgba(0, 255, 65, 0.3); /* Green shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex; /* Use flexbox for layout */
+            flex-direction: column; /* Stack image and info */
+            width: calc(33.33% - 20px); /* Adjust width for 3 columns with gap */
+            max-width: 350px; /* Max width per card */
+            text-align: left;
+            overflow: hidden; /* Hide overflow */
+        }
+
+        .project:hover {
+             transform: translateY(-5px);
+             box-shadow: 0 10px 20px rgba(0, 255, 65, 0.5);
+        }
+
+        .project-image {
+            height: 250px; /* Fixed height for image container */
+            overflow: hidden;
+            background-color: #111; /* Placeholder background */
+        }
+
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cover the area, might crop */
+            transition: transform 0.3s ease;
+        }
+        .project:hover .project-image img {
+            transform: scale(1.05); /* Slight zoom on hover */
+        }
+
+        .project-info {
+            padding: 25px;
+            flex-grow: 1; /* Allow info to take remaining space */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-info h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #00FF41;
+            text-shadow: none;
+            font-size: 1.4em;
+        }
+
+        .project-info p {
+            font-size: 0.95em; /* Slightly smaller text */
+            margin-bottom: 20px;
+            flex-grow: 1; /* Push button to bottom */
+            max-width: none;
+        }
+         .project-info p ul { /* Remove list styling if needed */
+            list-style: none;
+            padding: 0;
+         }
+          .project-info p li {
+             margin-bottom: 0;
+             font-size: 1em;
+          }
+
+
+        .project-info a { /* Button-like link */
+            display: inline-block;
+            padding: 8px 15px;
+            border: 1px solid #00FF41;
+            color: #00FF41;
+            text-align: center;
+            align-self: flex-start; /* Align button left */
+            margin-top: auto; /* Push to bottom */
+             border-bottom: 1px solid #00FF41; /* Keep border consistent */
+        }
+
+        .project-info a:hover {
+            background-color: #00FF41;
+            color: #000;
+             border-bottom: 1px solid #000;
+        }
+
+
+        /* Skills List Styling */
+        #skills ul {
+            list-style: none; /* Remove default bullets */
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px; /* Spacing between skills */
+            max-width: 900px; /* Limit width of skills area */
+        }
+
+        #skills li {
+            background-color: rgba(0, 255, 65, 0.1); /* Faint green background */
+            border: 1px solid #00FF41;
+            padding: 8px 15px;
+            border-radius: 4px; /* Slightly rounded corners */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 0; /* Override default li margin */
+        }
+
+         #skills li:hover {
+             transform: scale(1.1); /* Slight zoom on hover */
+             box-shadow: 0 0 10px #00FF41;
+         }
+
+
+        /* Contact Form Styling */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00FF41;
+            color: #00FF41;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1em;
+            border-radius: 3px;
+        }
+
+        .contact-form input::placeholder,
+        .contact-form textarea::placeholder { /* Style placeholders */
+            color: rgba(0, 255, 65, 0.5);
+            opacity: 1; /* Override browser defaults */
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00FF41;
+        }
+
+        .contact-form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Contact Links */
+        #contact .contact-links {
+             margin-top: 30px;
+             font-size: 1.1em;
+        }
+        #contact .contact-links a,
+        #contact .contact-links span {
+             margin: 0 10px; /* Spacing between links/info */
+        }
+         #contact .contact-links span { /* Non-link contact info */
+            color: #ccc;
+            border-bottom: none;
+         }
+
+
+        /* Simple fade-in animation for sections */
+        .section {
+            opacity: 0;
+            transform: translateY(30px); /* Slightly larger offset */
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive adjustments */
+         @media (max-width: 992px) { /* Medium devices (tablets, smaller desktops) */
+             .project {
+                 width: calc(50% - 15px); /* 2 columns */
+                 max-width: none;
+             }
+             #about .col-md-4, #about .col-md-8 {
+                 flex: 0 0 100%;
+                 max-width: 100%;
+                 text-align: center; /* Center align on smaller screens */
+             }
+              #about .col-md-8 p {
+                 text-align: left; /* Keep paragraph left aligned */
+             }
+             #experience-timeline::before {
+                left: 30px; /* Move line to left */
+                transform: translateX(0);
+             }
+             .timeline-block {
+                 width: calc(100% - 50px); /* Full width minus padding/margin */
+                 float: right; /* Stack all on right */
+                 clear: both;
+                 transform: translateX(0); /* Reset transform */
+                 margin-left: 50px; /* Space from line */
+                 margin-bottom: 30px;
+             }
+              .timeline-block:nth-child(odd) {
+                 transform: translateX(0);
+                 float: right;
+             }
+              .timeline-block:nth-child(even) {
+                 transform: translateX(0);
+                 float: right;
+             }
+             .timeline-block .timeline-marker {
+                 left: -48px; /* Position marker on the left line */
+                 top: 25px;
+             }
+             .timeline-block:nth-child(odd) .timeline-marker,
+             .timeline-block:nth-child(even) .timeline-marker {
+                 left: -48px;
+             }
+
+         }
+
+         @media (max-width: 768px) { /* Small devices (landscape phones, larger tablets) */
+            h1 { font-size: 2.5em; }
+            h2.heading { font-size: 2em; margin-bottom: 40px;}
+            .section { padding: 60px 5%; }
+            .profile-pic { width: 120px; height: 120px; }
+            .matrix-button { font-size: 1em; padding: 10px 20px;}
+         }
+         @media (max-width: 576px) { /* Extra small devices (portrait phones) */
+            h1 { font-size: 2em; }
+            h2.heading { font-size: 1.8em; }
+            .profile-pic { width: 100px; height: 100px; }
+            #skills li { font-size: 0.9em; padding: 6px 10px; }
+            .project {
+                 width: 100%; /* 1 column */
+            }
+             .education-block, .experience-card { padding: 20px; } /* Use experience-card for consistency */
+             #contact .contact-links a,
+             #contact .contact-links span {
+                 display: block; /* Stack contact links */
+                 margin: 5px 0;
+             }
+              #experience-timeline::before {
+                 left: 15px; /* Move line further left */
+             }
+              .timeline-block {
+                 width: calc(100% - 30px);
+                 margin-left: 30px;
+             }
+             .timeline-block .timeline-marker {
+                 left: -33px;
+             }
+              .timeline-block:nth-child(odd) .timeline-marker,
+             .timeline-block:nth-child(even) .timeline-marker {
+                 left: -33px;
+             }
+        }
+
+    </style>
 </head>
-
 <body>
-    <div id="mobile-menu-open" class="shadow-large">
-        <i class="fa fa-bars" aria-hidden="true"></i>
-    </div>
-    <!-- End #mobile-menu-toggle -->
-    <header>
-        <div id="mobile-menu-close">
-            <span>Close</span> <i class="fa fa-times" aria-hidden="true"></i>
-        </div>
-        <ul id="menu" class="shadow">
-            <li>
-                <a href="#about">About</a>
-            </li>
-            <li>
-                <a href="#experience">Experience</a>
-            </li>
-            <li>
-                <a href="#education">Education</a>
-            </li>
-            <li>
-                <a href="#projects">Projects</a>
-            </li>
-            <li>
-                <a href="#skills">Skills</a>
-            </li>
-            <li>
-                <a href="#contact">Contact</a>
-            </li>
-        </ul>
-    </header>
-    <!-- End header -->
+    <canvas id="matrix-canvas"></canvas>
 
-    <div id="lead">
-        <div id="lead-content">
-            <h1>Sibusiso Sihle Ntuli</h1>
-            <h2>Junior Software Engineer</h2>
-            <a href="https://drive.google.com/file/d/1aBn_tlOnFGHzfblQgKaEr_Si68tLt1tJ/view?usp=sharing" class="btn-rounded-white">Download Resume</a>
-        </div>
-        <!-- End #lead-content -->
+    <div class="content-container">
 
-        <div id="lead-overlay"></div>
-
-        <div id="lead-down">
-            <span>
-                <i class="fa fa-chevron-down" aria-hidden="true"></i>
-            </span>
-        </div>
-        <!-- End #lead-down -->
-    </div>
-    <!-- End #lead -->
-
-    <div id="about">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h2 class="heading">About Me</h2>
-                </div>
-                <div class="col-md-8">
-                    <p>
-                        🚀 Computer Science Graduate | Mainframe Developer intern | Passionate about Technology 🌟</p> <br/>
-                        
-			As a driven Software Engineer Intern specializing in mainframe technologies at Standard Bank, I bring a passion for innovation and a commitment to delivering impactful solutions. My recent graduation from Varsity College equipped me with a strong foundation in computer science and the drive to explore emerging technologies like blockchain, artificial intelligence, robotics, and drone systems.
-
-			A space enthusiast at heart, I’m inspired by the intersection of technology and exploration, always seeking opportunities to push boundaries and create transformative solutions. Outside of tech, my experiences as an athlete and gardener reflect my dedication to growth, resilience, and precision—qualities I bring to every project I undertake.
-
-			I’m eager to connect with visionaries, investors, and innovators who share my ambition to shape the future through technology and collaboration. Together, let’s build solutions that redefine possibilities.
-                        
-                    </p>
-                </div>
+        <section id="hero" class="section">
+            <img src="https://placehold.co/150x150/000000/00FF41?text=SN" alt="Sibusiso Ntuli" class="profile-pic" onerror="this.src='https://placehold.co/150x150/000000/00FF41?text=Profile+Pic'; this.onerror=null;">
+            <h1>Sibusiso Ntuli</h1>
+            <p class="subtitle">Junior Software Engineer</p>
+            <div>
+                 <a href="#about" class="matrix-button">Enter the Construct</a>
+                 <a href="https://drive.google.com/file/d/1aBn_tlOnFGHzfblQgKaEr_Si68tLt1tJ/view?usp=sharing" target="_blank" rel="noopener" class="matrix-button">Download Resume</a>
             </div>
-        </div>
-    </div>
-    <!-- End #about -->
+        </section>
 
-    <div id="experience" class="background-alt">
-        <h2 class="heading">Experience</h2>
-        <div id="experience-timeline">
-            <div data-date="February 2023 – January 2024">
-                <h3>Freelance work</h3>
-                <h4>Back-end developer - Online</h4>
-                <p>
-                    • Develop project concepts and maintain optimal workflow. <br/>
-                    • Collaborate with other developers to manage large, complex design projects for clients. <br/>
-                    • Complete detailed programming and development tasks for mobile/desktop apps and internal websites as well as challenging back-end server code. <br/> 
-                    • Carry out quality assurance tests to discover errors and optimize usability.
-                </p>
-            </div>
-
-            <div data-date="May 2024 – Till now">
-                <h3>Standard Bank Group</h3>
-                <h4>Mainframe Developer Intern - Johannesburg, South Africa</h4>
-                <p>
-                    • Develop a foundational understanding of Mainframe systems, including hardware, software, and associated technologies. <br/>
-                    • Assist in the installation, configuration, and maintenance of Mainframe software and applications. <br/>
-                    • Execute routine Mainframe tasks such as file management, job scheduling, and system monitoring under supervision. <br/>
-                    • Collaborate with senior Mainframe professionals to troubleshoot and resolve technical issues. <br/>
-                    • Participate in Mainframe-related projects, contributing ideas and solutions to achieve project goals. <br/>
-                    • Stay updated on emerging trends and best practices in Mainframe technology through self-study and professional development opportunities.<br/>
-                </p>
-            </div>
-        </div>
-    </div>
-
-    
-    <!-- End #experience -->
-
-    <div id="education">
-        <h2 class="heading">High School</h2>
-        <div class="education-block">
-            <h3>Eureka High School</h3>
-            <span class="education-date">Jan 2015 - Dec 2020</span>
-            <h4>Passed with admission to Bachelor's Degree</h4>
-            <p>
-                I completed my high school education from Eureka High School in 2020. During this time, I developed an interest in biology and technology.<br/>
-                <a href="https://drive.google.com/file/d/1oLvH0kWOE6mAQbiSBjnxD5w_QMmL5gIM/view?usp=drive_link" target="_blank" rel="noopener">Matric Certificate</a>
-            </p>
-            
-        </div>
-        <!-- End .education-block -->
-
-    <div id="education">
-        <h2 class="heading">Tertiary Education</h2>
-        <div class="education-block">
-            <h3>IIE Varsity College Waterfall</h3>
-            <span class="education-date">Jan 2021 - Dec 2023</span>
-            <h4>Bachelor of Computer and Information Sciences in Application Development</h4>
-            <p>
-                I attended the VC Waterfall Hackathon, where me and my teamates created an innovative (Android) expense management mobile app.
-                I also was a member of VC Cares, a commity in campus that focuses on doing fundraising events to help the neighboring communties.<br/>
-                <a href="https://drive.google.com/file/d/1Tub-pFHvW7BqhTIQ27UEsDDSOy6OaB4b/view?usp=sharing">Academic Transcript</a><br/>
-                <a href="https://drive.google.com/file/d/11zRDC5DwCPiY507Tuznc04nsxQjArFXk/view?usp=sharing">Graduation Confirmation Letter</a>
-            </p>
-        </div>
-        <!-- End .education-block -->
-
-        <div id="education">
-            <h2 class="heading">Online Certifications</h2>
-            <div class="education-block">
-                <h3>Simplilearn and Programming Hub</h3>
-                <span class="education-date">Apr 2023 - Jan 2024</span>
-                <h4>Computer and Information Sciences Courses</h4>
-                <p>
-                    I completed multiple online courses including blockchain basics, solidity basics, kotlin basics, ChatGPT 101, 
-                    Introduction To Digital Transformation With Google Cloud, blockchain Developer Training, and Introduction To Generative AI<br/>
-                    <a href="https://drive.google.com/drive/folders/1UkxPyljJdPUycF4BHTs6pTmtVwaKslB4?usp=sharing">Online Certificates</a>
-                </p>
-            </div>
-            <!-- End .education-block -->
-    </div>
-    <!-- End #education -->
-
-    <div id="projects" class="background-alt">
-        <h2 class="heading">My Open-Source Projects</h2>
-        <div class="container">
-            <div class="row">
-                <div class="project shadow-large">
-                    <div class="project-image">
-                        <img src="images/origami.png" width="370" height="370" alt="Avian Watch" />
+        <section id="about" class="section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h2 class="heading">About Me</h2>
                     </div>
-                    <!-- End .project-image -->
-                    <div class="project-info">
-                        <h3>Avian Watch</h3>
+                    <div class="col-md-8">
                         <p>
-                            <ul>
-                                Avian Watch is an Android mobile application tailored for bird watching enthusiasts, providing a user-friendly platform to discover local birding hotspots. 
-                                The app facilitates seamless navigation to selected locations using the Google Maps API and allows users to record and review their bird observations with GPS tracking. 
-                                Key features include secure user registration through Firebase Authentication, customizable settings for measurement preferences and distance limits, 
-                                and a community section for users to share and engage with each other's bird sightings. Avian Watch enhances the birding experience by combining technology and community interaction in a straightforward and convenient application.
-                            </ul>
+                            <strong>🚀 Computer Science Graduate | Mainframe Developer intern | Passionate about Technology 🌟</strong>
                         </p>
-                        <a href="https://github.com/CODIEX0/AvianWatch">View Project</a>
-                    </div>
-                    <!-- End .project-info -->
-                </div>
-                <!-- End .project -->
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                <div class="project shadow-large">
-                    <div class="project-image">
-                        <img src="images/Man.png" width="350" height="350" alt="BudgetX" />
-                    </div>
-                    <!-- End .project-image -->
-                    <div class="project-info">
-                        <h3>BudgetX</h3>
                         <p>
-                            <ul>
-                                BudgetX is a robust desktop application designed to empower users with effective budget management and financial control. 
-                                This intuitive and feature-rich app simplifies the process of creating, tracking, and optimizing budgets to help users achieve their financial goals.                                  
-                                BudgetX is the ideal companion for individuals and businesses looking to take charge of their finances, plan for the future, 
-                                and achieve financial success. Experience the ease and empowerment of budgeting with BudgetX on your desktop.
-                            </ul>
+                            As a driven Software Engineer Intern specializing in mainframe technologies at Standard Bank, I bring a passion for innovation and a commitment to delivering impactful solutions. My recent graduation from Varsity College equipped me with a strong foundation in computer science and the drive to explore emerging technologies like blockchain, artificial intelligence, robotics, and drone systems.
                         </p>
-                        <a href="https://github.com/CODIEX0/BudgetX">View Project</a>
-                    </div>
-                    <!-- End .project-info -->
-                </div>
-                <!-- End .project -->
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                <div class="project shadow-large">
-                    <div class="project-image">
-                        <img src="images/worm.png" width="350" height="380" alt="Earth Worm" />
-                    </div>
-                    <!-- End .project-image -->
-                    <div class="project-info">
-                        <h3>Earth Worm</h3>
                         <p>
-                            <ul>
-                                Earthworm is a captivating Windows application that offers a modern twist on the classic Snake game. 
-                                This entertaining and addictive game invites users to navigate an earthworm through a vibrant and dynamic environment filled with challenges. 
-                                As players control the earthworm's movements, they must strategically collect items and avoid obstacles to grow in length and advance through various levels. 
-                                With a user-friendly interface and responsive controls, Earthworm provides an engaging gaming experience for players of all ages. 
-                                The game's sleek design and visually appealing graphics add an immersive element to the nostalgic Snake gameplay, 
-                                making Earthworm a delightful choice for those seeking a fun and challenging Windows gaming experience.
-                            </ul>
+                            A space enthusiast at heart, I’m inspired by the intersection of technology and exploration, always seeking opportunities to push boundaries and create transformative solutions. Outside of tech, my experiences as an athlete and gardener reflect my dedication to growth, resilience, and precision—qualities I bring to every project I undertake.
                         </p>
-                        <a href="https://github.com/CODIEX0/earth-worm">View Project</a>
-                    </div>
-                    <!-- End .project-info -->
-                </div>
-                <!-- End .project -->
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                <div class="project shadow-large">
-                    <div class="project-image">
-                        <img src="images/egarden_logo.png" width="350" height="400" alt="eGarden" />
-                    </div>
-                    <!-- End .project-image -->
-                    <div class="project-info">
-                        <h3>eGarden</h3>
                         <p>
-                            <ul>
-                                eGarden is a user-friendly CRUD (Create, Read, Update, Delete) mobile application designed for gardening enthusiasts, 
-                                providing a seamless platform to manage and organize gardening-related tasks. Users can effortlessly create and store information about their plants, 
-                                including details like plant names, species, and important care instructions. The app allows for easy browsing and retrieval of plant information, 
-                                making it a handy tool for gardeners to keep track of their green companions. With eGarden, users can update and modify plant details as their garden evolves, 
-                                ensuring that the app grows with their botanical journey. The intuitive interface simplifies the process of adding, editing, and removing plants from the virtual garden, 
-                                making eGarden an essential companion for anyone passionate about cultivating a thriving and well-managed garden.
-                            </ul>
+                            I’m eager to connect with visionaries, investors, and innovators who share my ambition to shape the future through technology and collaboration. Together, let’s build solutions that redefine possibilities.
                         </p>
-                        <a href="https://github.com/CODIEX0/EGarden">View Project</a>
                     </div>
-                    <!-- End .project-info -->
-                </div>
-                <!-- End .project -->
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                <div class="project shadow-large">
-                    <div class="project-image">
-                        <img src="images/logo.png" width="350" height="380" alt="Expensense" />
-                    </div>
-                    <!-- End .project-image -->
-                    <div class="project-info">
-                        <h3>ExpenSense</h3>
-                        <p>
-                            <ul>
-                                ExpenSense is a streamlined CRUD (Create, Read, Update, Delete) mobile application designed to simplify and enhance your expense management experience. 
-                                This user-friendly app empowers you to effortlessly track your spending by enabling quick and intuitive data entry for all your financial transactions. 
-                                With ExpenSense, you can easily create and categorize expenses, providing a clear overview of your financial landscape. 
-                                The app allows for seamless updates to transaction details and categories, adapting to your changing financial needs. 
-                                Efficiently manage and organize your expenses with the ability to delete or archive outdated entries. 
-                                ExpenSense is your go-to tool for maintaining a comprehensive and up-to-date record of your financial activities, 
-                                ultimately helping you achieve greater financial control and peace of mind.
-                            </ul>
-                        </p>
-                        <a href="https://github.com/CODIEX0/ExpenSense">View Project</a>
-                    </div>
-                    <!-- End .project-info -->
-                </div>
-                <!-- End .project -->
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                <div class="project shadow-large">
-                    <div class="project-image">
-                        <img src="images/workmate_logo.png" width="350" height="390" alt="Work Mate" />
-                    </div>
-                    <!-- End .project-image -->
-                    <div class="project-info">
-                        <h3>Work Mate</h3>
-                        <p>
-                            <ul>
-                                WorkMate is a practical and efficient mobile work management app designed to streamline your professional tasks and boost productivity on the go. 
-                                This user-friendly application provides a centralized platform for managing projects, tasks, and deadlines seamlessly. 
-                                With WorkMate, you can create, assign, and track tasks with ease, ensuring that everyone on your team stays organized and on schedule. 
-                                The app's intuitive interface allows for quick updates and collaboration, keeping everyone in the loop. 
-                                Whether you're a project manager coordinating team efforts or an individual professional juggling multiple responsibilities, 
-                                WorkMate simplifies work management by providing a comprehensive solution right at your fingertips. Stay on top of your tasks, 
-                                collaborate effortlessly, and enhance your work efficiency with the convenience of WorkMate.
-                            </ul>
-                        </p>
-                        <a href="https://github.com/CODIEX0/WorkMateX">View Project</a>
-                    </div>
-                    <!-- End .project-info -->
-                </div>
-                <!-- End .project -->
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                <div class="project shadow-large">
-                    <div class="project-image">
-                        <img src="images/deweydecimal.png" width="350" height="350" alt="Dewey Decimal Classification App" />
-                    </div>
-                    <!-- End .project-image -->
-                    <div class="project-info">
-                        <h3>Dewey Decimal Classification App</h3>
-                        <p>
-                            <ul>
-                                This Dewey Decimal Classification app makes learning about the Dewey Decimal system more fun and engaging. Tailored for librarians, 
-                                educators, and students. This user-friendly app allows for efficient classification of books.
-                                This Dewey Decimal Classification app makes learning about the Dewey Decimal system more fun and engaging.
-                            </ul>
-                        </p>
-                        <a href="https://github.com/CODIEX0/DeweyDecimalClassification">View Project</a>
-                    </div>
-                    <!-- End .project-info -->
-                </div>
-                <!-- End .project -->
-            </div>
-        </div>
-
-    </div>
-    <!-- End #projects -->    
-
-    <div id="skills">
-        <h2 class="heading">Skills</h2>
-        <ul>
-            <li>Kotlin</li>
-            <li>Sql</li>
-            <li>NoSql</li>
-            <li>Json</li>
-            <li>Solidity</li>
-            <li>Azure</li>
-            <li>Restful API's</li>
-            <li>.NET</li>
-            <li>WPF</li>
-            <li>z/OS</li>
-            <li>C#</li>
-            <li>Json</li>
-            <li>MongoDB</li>
-            <li>Firebase</li>
-            <li>JavaScript</li>
-            <li>Python</li>
-            <li>Node.js</li>
-            <li>AngularJs</li>
-            <li>DB2</li>
-            <li>Html/CSS</li>
-            <li>Java</li>
-            <li>COBOL</li>
-        </ul>
-    </div>
-    <!-- End #skills -->
-
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-5 copyright">
-                    <p>
-                        Copyright &copy; <span id="current-year">2024</span> SIBUSISO NTULI
-                    </p>
-                </div>
-                <div class="col-sm-2 top">
-                    <span id="to-top">
-                        <i class="fa fa-chevron-up" aria-hidden="true"></i>
-                    </span>
-                </div>
-                <div class="col-sm-5 social">
-                    <ul>
-                        <li>
-                            <a href="https://github.com/CODIEX0" rel="noopener" target="_blank"><i class="fa fa-github" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://stackoverflow.com/users/23134825/codiex0" rel="noopener" target="_blank"><i class="fa fa-stack-overflow" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://linkedin.com/in/sibusiso-ntuli-b55638247" rel="noopener" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://twitter.com/CodyX07456802" rel="noopener" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-                        </li>
-                    </ul>
                 </div>
             </div>
-        </div>
-    </footer>
-    <!-- End footer -->
+        </section>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="js/scripts.min.js"></script>
+        <section id="experience" class="section background-alt">
+            <h2 class="heading">Experience</h2>
+            <div id="experience-timeline">
+                <div class="timeline-block">
+                     <div class="timeline-marker"></div>
+                     <h3>Standard Bank Group</h3>
+                     <h4>Mainframe Developer Intern - Johannesburg (May 2024 – Present)</h4>
+                     <p>
+                         • Develop a foundational understanding of Mainframe systems.<br/>
+                         • Assist in the installation, configuration, and maintenance of Mainframe software.<br/>
+                         • Execute routine Mainframe tasks (file management, job scheduling, monitoring).<br/>
+                         • Collaborate with senior professionals to troubleshoot technical issues.<br/>
+                         • Participate in Mainframe-related projects.<br/>
+                         • Stay updated on emerging trends in Mainframe technology.
+                     </p>
+                 </div>
+                 <div class="timeline-block">
+                     <div class="timeline-marker"></div>
+                     <h3>Freelance Work</h3>
+                     <h4>Back-end Developer - Online (Feb 2023 – Jan 2024)</h4>
+                     <p>
+                         • Develop project concepts and maintain optimal workflow.<br/>
+                         • Collaborate with developers on large, complex design projects.<br/>
+                         • Complete programming for mobile/desktop apps, websites, and back-end code.<br/>
+                         • Carry out quality assurance tests to discover errors and optimize usability.
+                     </p>
+                 </div>
+
+            </div>
+        </section>
+
+        <section id="education" class="section">
+             <h2 class="heading">Education</h2>
+
+             <div class="education-block">
+                 <h3>IIE Varsity College Waterfall</h3>
+                 <span class="education-date">Jan 2021 - Dec 2023</span>
+                 <h4>Bachelor of Computer and Information Sciences in Application Development</h4>
+                 <p>
+                     Activities & Societies: VC Cares, Athletics, Hackathon participation.<br/>
+                     Developed multiple software solutions using diverse tools and collaborated in groups to tackle real-world problems.
+                 </p>
+                 <p>
+                     <a href="https://drive.google.com/file/d/1Tub-pFHvW7BqhTIQ27UEsDDSOy6OaB4b/view?usp=sharing" target="_blank" rel="noopener">Academic Transcript</a>
+                     <a href="https://drive.google.com/file/d/11zRDC5DwCPiY507Tuznc04nsxQjArFXk/view?usp=sharing" target="_blank" rel="noopener">Graduation Confirmation</a>
+                 </p>
+             </div>
+
+             <div class="education-block">
+                 <h3>Online Certifications (Simplilearn, Programming Hub)</h3>
+                 <span class="education-date">Apr 2023 - Jan 2024</span>
+                 <h4>Computer and Information Sciences Courses</h4>
+                 <p>
+                     Completed multiple online courses including: Blockchain Basics, Solidity Basics, Kotlin Basics, ChatGPT 101,
+                     Introduction To Digital Transformation With Google Cloud, Blockchain Developer Training, and Introduction To Generative AI.
+                 </p>
+                 <p>
+                     <a href="https://drive.google.com/drive/folders/1UkxPyljJdPUycF4BHTs6pTmtVwaKslB4?usp=sharing" target="_blank" rel="noopener">View Certificates</a>
+                 </p>
+             </div>
+
+             <div class="education-block">
+                 <h3>Eureka High School</h3>
+                 <span class="education-date">Jan 2015 - Dec 2020</span>
+                 <h4>Passed with admission to Bachelor's Degree</h4>
+                 <p>
+                     Completed high school education, developing an interest in biology and technology.
+                 </p>
+                 <p>
+                     <a href="https://drive.google.com/file/d/1oLvH0kWOE6mAQbiSBjnxD5w_QMmL5gIM/view?usp=drive_link" target="_blank" rel="noopener">Matric Certificate</a>
+                 </p>
+             </div>
+        </section>
+
+
+        <section id="projects" class="section background-alt">
+            <h2 class="heading">My Open-Source Projects</h2>
+            <div class="container">
+                <div class="row">
+                    <div class="project">
+                        <div class="project-image">
+                            <img src="images/origami.png" alt="Avian Watch" onerror="this.src='https://placehold.co/350x250/111111/00FF41?text=Avian+Watch'; this.onerror=null;"/>
+                        </div>
+                        <div class="project-info">
+                            <h3>Avian Watch</h3>
+                            <p>
+                                Android app for bird watchers to discover hotspots, navigate via Google Maps, record observations with GPS, and share sightings. Features Firebase Authentication.
+                            </p>
+                            <a href="https://github.com/CODIEX0/AvianWatch" target="_blank" rel="noopener">View Project</a>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-image">
+                             <img src="images/Man.png" alt="BudgetX" onerror="this.src='https://placehold.co/350x250/111111/00FF41?text=BudgetX'; this.onerror=null;"/>
+                        </div>
+                        <div class="project-info">
+                            <h3>BudgetX</h3>
+                            <p>
+                                Robust desktop application for effective budget management and financial control. Simplifies creating, tracking, and optimizing budgets.
+                            </p>
+                            <a href="https://github.com/CODIEX0/BudgetX" target="_blank" rel="noopener">View Project</a>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-image">
+                             <img src="images/worm.png" alt="Earth Worm" onerror="this.src='https://placehold.co/350x250/111111/00FF41?text=Earth+Worm'; this.onerror=null;"/>
+                        </div>
+                        <div class="project-info">
+                            <h3>Earth Worm</h3>
+                            <p>
+                                A captivating Windows application offering a modern twist on the classic Snake game. Navigate the worm, collect items, and avoid obstacles.
+                            </p>
+                            <a href="https://github.com/CODIEX0/earth-worm" target="_blank" rel="noopener">View Project</a>
+                        </div>
+                    </div>
+                    <div class="project">
+                        <div class="project-image">
+                             <img src="images/egarden_logo.png" alt="eGarden" onerror="this.src='https://placehold.co/350x250/111111/00FF41?text=eGarden'; this.onerror=null;"/>
+                        </div>
+                        <div class="project-info">
+                            <h3>eGarden</h3>
+                            <p>
+                                User-friendly CRUD mobile application for gardening enthusiasts to manage and organize plant information and care instructions.
+                            </p>
+                            <a href="https://github.com/CODIEX0/EGarden" target="_blank" rel="noopener">View Project</a>
+                        </div>
+                    </div>
+                     <div class="project">
+                        <div class="project-image">
+                             <img src="images/logo.png" alt="ExpenSense" onerror="this.src='https://placehold.co/350x250/111111/00FF41?text=ExpenSense'; this.onerror=null;"/>
+                        </div>
+                        <div class="project-info">
+                            <h3>ExpenSense</h3>
+                            <p>
+                                Streamlined CRUD mobile application to simplify expense management. Track spending with intuitive data entry and categorization.
+                            </p>
+                            <a href="https://github.com/CODIEX0/ExpenSense" target="_blank" rel="noopener">View Project</a>
+                        </div>
+                    </div>
+                     <div class="project">
+                        <div class="project-image">
+                             <img src="images/workmate_logo.png" alt="Work Mate" onerror="this.src='https://placehold.co/350x250/111111/00FF41?text=Work+Mate'; this.onerror=null;"/>
+                        </div>
+                        <div class="project-info">
+                            <h3>Work Mate</h3>
+                            <p>
+                                Practical mobile work management app to streamline professional tasks, manage projects, tasks, and deadlines for boosted productivity.
+                            </p>
+                            <a href="https://github.com/CODIEX0/WorkMateX" target="_blank" rel="noopener">View Project</a>
+                        </div>
+                    </div>
+                     <div class="project">
+                        <div class="project-image">
+                             <img src="images/deweydecimal.png" alt="Dewey Decimal Classification App" onerror="this.src='https://placehold.co/350x250/111111/00FF41?text=Dewey+Decimal'; this.onerror=null;"/>
+                        </div>
+                        <div class="project-info">
+                            <h3>Dewey Decimal Classification App</h3>
+                            <p>
+                                Makes learning the Dewey Decimal system fun and engaging. Tailored for librarians, educators, and students for efficient book classification.
+                            </p>
+                            <a href="https://github.com/CODIEX0/DeweyDecimalClassification" target="_blank" rel="noopener">View Project</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="section">
+            <h2 class="heading">Skills</h2>
+            <ul>
+                <li>Java</li>
+                <li>Kotlin</li>
+                <li>SQL</li>
+                <li>NoSQL</li>
+                <li>C#</li>
+                <li>.NET</li>
+                <li>Python</li>
+                <li>Restful API's</li>
+                <li>JavaScript</li>
+                <li>Angular.Js</li>
+                <li>Node.js</li>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>COBOL</li>
+                <li>Z/OS</li>
+                <li>CICS</li>
+                <li>DB2</li>
+                <li>JCL</li>
+                <li>Git Version Control</li>
+                <li>Ethereum Smart Contracts</li>
+                <li>Solidity</li>
+                <li>Docker</li>
+                <li>Agile Methodologies</li>
+                <li>AWS / Azure / GCP</li> {/* Kept example Cloud skill */}
+                <li>Json</li> {/* From old list */}
+                <li>WPF</li> {/* From old list */}
+                <li>MongoDB</li> {/* From old list */}
+                <li>Firebase</li> {/* From old list */}
+            </ul>
+        </section>
+
+        <section id="contact" class="section background-alt">
+            <h2 class="heading">Establish Connection</h2>
+            <p>Ready to unplug or discuss a potential collaboration? Send a signal.</p>
+            <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                <input type="text" name="name" placeholder="Your Name / Alias" required>
+                <input type="email" name="email" placeholder="Your Signal Path (Email)" required>
+                <textarea name="message" placeholder="Your Message..." rows="5" required></textarea>
+                <button type="submit">Transmit Signal</button>
+            </form>
+             <div class="contact-links">
+                 <p>Connect via other channels:</p>
+                 <p>
+                     <a href="https://www.linkedin.com/in/sibusiso-n-b55638247" target="_blank" rel="noopener">LinkedIn</a> |
+                     <a href="https://github.com/CODIEX0" target="_blank" rel="noopener">GitHub</a> |
+                     <a href="https://stackoverflow.com/users/23134825/codiex0" rel="noopener" target="_blank">Stack Overflow</a> | {/* Added from old footer */}
+                     <a href="https://twitter.com/CodyX07456802" rel="noopener" target="_blank">Twitter</a> | {/* Added from old footer */}
+                     <span>Email: codyntuli@gmail.com</span> |
+                     <span>Phone: 0789305982</span>
+                 </p>
+             </div>
+        </section>
+
+    </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // --- Three.js Setup ---
+        const canvas = document.getElementById('matrix-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true }); // alpha: true for transparent background
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio); // Adjust for high DPI screens
+
+        // --- Lighting ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0x00ff41, 1, 100);
+        pointLight.position.set(0, 10, 30);
+        scene.add(pointLight);
+
+        // --- Digital Rain Parameters ---
+        const particleCount = 8000;
+        const particleSize = 0.15;
+        const fallSpeed = 0.03;
+        const characterSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ<>{}[]()/*&^%$#@!';
+        const streamLength = 25;
+
+        const particlesGeometry = new THREE.BufferGeometry();
+        const positions = [];
+        const colors = [];
+        const velocities = [];
+
+        const matrixGreen = new THREE.Color(0x00FF41);
+        const brightGreen = new THREE.Color(0x90EE90);
+        const white = new THREE.Color(0xFFFFFF);
+
+        // --- Create Rain Particles ---
+        for (let i = 0; i < particleCount; i++) {
+            const x = THREE.MathUtils.randFloatSpread(100);
+            const y = THREE.MathUtils.randFloat(0, 100);
+            const z = THREE.MathUtils.randFloatSpread(50);
+            positions.push(x, y, z);
+            velocities.push({
+                speed: THREE.MathUtils.randFloat(fallSpeed * 0.5, fallSpeed * 1.5),
+                isLeading: Math.random() < 1 / streamLength
+            });
+            colors.push(matrixGreen.r, matrixGreen.g, matrixGreen.b);
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        particlesGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: particleSize,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.7,
+            blending: THREE.AdditiveBlending,
+            sizeAttenuation: true
+        });
+
+        const rain = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(rain);
+
+        // --- UFO and Bug Setup ---
+        const ufoGeometry = new THREE.ConeGeometry(0.8, 0.3, 16);
+        const ufoMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.8, roughness: 0.4 });
+        const ufo = new THREE.Mesh(ufoGeometry, ufoMaterial);
+        ufo.rotation.x = Math.PI;
+        scene.add(ufo);
+
+        const bugGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+        const bugMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const bug = new THREE.Mesh(bugGeometry, bugMaterial);
+        scene.add(bug);
+
+        // UFO/Bug Animation Variables
+        let bugTargetPosition = new THREE.Vector3(
+             THREE.MathUtils.randFloatSpread(40),
+             THREE.MathUtils.randFloat(-20, 20),
+             THREE.MathUtils.randFloat(5, 25)
+        );
+        const bugSpeed = 0.05;
+        const ufoChaseSpeed = 0.03;
+        let bugMoveTimer = 0;
+        const bugMoveInterval = 100;
+
+        // --- Camera Position ---
+        camera.position.z = 50;
+
+        // --- Animation Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // --- Rain Animation ---
+            const positionsAttribute = particlesGeometry.getAttribute('position');
+            const colorsAttribute = particlesGeometry.getAttribute('color');
+            const currentPositions = positionsAttribute.array;
+            const currentColors = colorsAttribute.array;
+
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                const velocityInfo = velocities[i];
+                currentPositions[i3 + 1] -= velocityInfo.speed;
+
+                let color;
+                if (velocityInfo.isLeading) {
+                    color = white;
+                } else {
+                    const yPos = currentPositions[i3 + 1];
+                    const streamProgress = THREE.MathUtils.mapLinear(yPos, 50, -50, 0, 1);
+                    color = matrixGreen.clone().lerp(brightGreen, streamProgress * 0.5);
+                }
+
+                if (currentPositions[i3 + 1] < -50) {
+                    currentPositions[i3 + 1] = 50;
+                    currentPositions[i3] = THREE.MathUtils.randFloatSpread(100);
+                    velocityInfo.isLeading = Math.random() < 1 / streamLength;
+                    velocityInfo.speed = THREE.MathUtils.randFloat(fallSpeed * 0.5, fallSpeed * 1.5);
+                }
+
+                currentColors[i3] = color.r;
+                currentColors[i3 + 1] = color.g;
+                currentColors[i3 + 2] = color.b;
+            }
+            positionsAttribute.needsUpdate = true;
+            colorsAttribute.needsUpdate = true;
+
+            // --- UFO and Bug Animation ---
+            bugMoveTimer++;
+            if (bugMoveTimer > bugMoveInterval) {
+                bugTargetPosition.set(
+                    THREE.MathUtils.randFloatSpread(40),
+                    THREE.MathUtils.randFloat(-20, 20),
+                    THREE.MathUtils.randFloat(5, 25)
+                );
+                bugMoveTimer = 0;
+            }
+            bug.position.lerp(bugTargetPosition, bugSpeed);
+            ufo.position.lerp(bug.position, ufoChaseSpeed);
+            ufo.rotation.z += 0.02;
+            ufo.rotation.y += 0.01;
+
+            renderer.render(scene, camera);
+        }
+
+        // --- Handle Window Resize ---
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+        }
+        window.addEventListener('resize', onWindowResize, false);
+
+        // --- Section Visibility on Scroll ---
+        const sections = document.querySelectorAll('.section');
+        const contentContainer = document.querySelector('.content-container');
+
+        const observerOptions = {
+            root: contentContainer, // Observe within the scrolling container
+            rootMargin: '0px',
+            threshold: 0.1 // Trigger when 10% is visible (adjust as needed)
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                // Add class when intersecting, don't remove (keep visible once scrolled past)
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+           observer.observe(section); // Observe all sections
+        });
+
+         // Ensure hero is visible on load without waiting for scroll
+         document.addEventListener('DOMContentLoaded', () => {
+            const heroSection = document.getElementById('hero');
+            if (heroSection) {
+                heroSection.classList.add('visible');
+            }
+         });
+
+
+        // --- Start Animation ---
+        animate();
+
+    </script>
 </body>
-
 </html>
