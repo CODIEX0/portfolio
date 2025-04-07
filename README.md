@@ -8,7 +8,7 @@
 
 ## 👋 Introduction
 
-Welcome to my portfolio! I'm Sibusiso Ntuli, a driven Software Engineer currently interning at Standard Bank, specializing in mainframe technologies. I hold a Bachelor of Computer and Information Sciences in Application Development from IIE Varsity College.
+Welcome to my portfolio! I'm Sibusiso Ntuli, a driven Software Engineer, specializing in backend developement. I hold a Bachelor of Computer and Information Sciences in Application Development from IIE Varsity College.
 
 My passion lies in innovation and leveraging technology to build impactful, elegant solutions. I'm actively exploring emerging fields like blockchain, AI, robotics, and drone systems, always eager to push boundaries and collaborate on projects that redefine possibilities. This portfolio itself is an experiment in combining web technologies (HTML, CSS, JavaScript) with creative animation using Three.js, all wrapped in a 'Matrix' theme, and even includes a small interactive game! * with a little help from Google Gemini✨ 😉
 
