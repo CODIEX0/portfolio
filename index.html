@@ -3,38 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Sibusiso Ntuli - Software Engineer Portfolio</title>
     <link rel="shortcut icon" href="favicon1.ico" type="image/x-icon">
-    <link rel="icon" href="images/ufo.ico" type="image/x-icon">
+    <link rel="icon" href="favicon1.ico" type="image/x-icon">
     <style>
         /* Basic Reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         html {
-             scroll-behavior: smooth; /* Ensure smooth scrolling for internal links */
+             scroll-behavior: smooth;
         }
 
         body {
-            font-family: 'Courier New', Courier, monospace; /* Matrix-like font */
-            background-color: #000000; /* Black background */
-            color: #00FF41; /* Matrix green text */
-            overflow: hidden; /* Hide scrollbars initially */
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #000000;
+            color: #00FF41;
+            overflow: hidden; /* Hide scrollbars initially, managed by JS */
             line-height: 1.6;
         }
 
         /* Style for the Three.js canvas */
         #matrix-canvas {
-            position: fixed; /* Fixed position to stay behind content */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Ensure it's behind other content */
+            z-index: -1;
+            transition: opacity 0.5s ease;
         }
 
         /* Container for the scrollable content */
@@ -43,592 +49,251 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100vh; /* Use viewport height */
-            overflow-y: auto; /* Allow vertical scrolling */
-            z-index: 1; /* Ensure content is above canvas */
-            scroll-behavior: smooth; /* Smooth scrolling */
+            height: 100vh;
+            overflow-y: auto; /* Allow scrolling for portfolio */
+            z-index: 1;
+            scroll-behavior: smooth;
+            transition: opacity 0.5s ease;
         }
+
+        /* Styles when game is active */
+        body.game-active {
+             overflow: hidden; /* Prevent scrolling body */
+        }
+        body.game-active #matrix-canvas,
+        body.game-active .content-container {
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
 
         /* General Section Styling */
         .section {
-            min-height: 100vh; /* Each section takes at least full viewport height */
-            padding: 80px 10%; /* Padding top/bottom and left/right */
+            min-height: 100vh;
+            padding: 80px 10%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            /* Add a subtle dark overlay to make text more readable over the rain */
-            background-color: rgba(0, 0, 0, 0.75); /* Slightly darker overlay */
-            border-bottom: 1px solid #00FF41; /* Separator line */
-            position: relative; /* Needed for absolute positioning of elements */
+            background-color: rgba(0, 0, 0, 0.75);
+            border-bottom: 1px solid #00FF41;
+            position: relative;
         }
-        /* Alternate background color for sections */
         .background-alt {
-             background-color: rgba(0, 10, 0, 0.8); /* Darker green tint overlay */
+             background-color: rgba(0, 10, 0, 0.8);
         }
+        .section:last-child { border-bottom: none; }
 
+        /* Hero Section */
+        #hero { background-color: transparent; justify-content: center; }
+        #hero-buttons { margin-top: 20px; }
 
-        .section:last-child {
-            border-bottom: none;
-        }
-
-        /* Hero Section Specific Styling */
-        #hero {
-            background-color: transparent; /* Hero section doesn't need the overlay initially */
-            justify-content: center; /* Center vertically */
-        }
-
-        /* Profile Picture Styling */
+        /* Profile Picture */
         .profile-pic {
-            width: 150px; /* Adjust size as needed */
-            height: 150px;
-            border-radius: 50%; /* Make it circular */
-            border: 3px solid #00FF41; /* Matrix green border */
-            margin-bottom: 25px;
-            object-fit: cover; /* Ensure image covers the area well */
-            box-shadow: 0 0 15px #00FF41; /* Add glow */
+            width: 150px; height: 150px; border-radius: 50%;
+            border: 3px solid #00FF41; margin-bottom: 25px;
+            object-fit: cover; box-shadow: 0 0 15px #00FF41;
         }
 
-        h1, h2, h3, h4 { /* Added h4 */
-            color: #ffffff; /* Brighter white for headings */
-            margin-bottom: 20px;
-            text-shadow: 0 0 5px #00FF41, 0 0 10px #00FF41; /* Green glow */
+        /* Headings */
+        h1, h2, h3, h4 {
+            color: #ffffff; margin-bottom: 20px;
+            text-shadow: 0 0 5px #00FF41, 0 0 10px #00FF41;
         }
+        h1 { font-size: 3em; margin-bottom: 10px; }
+        #hero p.subtitle { font-size: 1.3em; margin-bottom: 30px; color: #00FF41; text-shadow: none; }
+        h2.heading { font-size: 2.5em; width: 100%; text-align: center; margin-bottom: 50px; color: #00FF41; }
+        h3 { font-size: 1.6em; }
+        h4 { font-size: 1.2em; color: #bbbbbb; text-shadow: none; font-weight: normal; margin-bottom: 10px; }
 
-        h1 {
-            font-size: 3em;
-            margin-bottom: 10px; /* Reduce space below h1 */
-        }
-        /* Title below name */
-        #hero p.subtitle {
-            font-size: 1.3em;
-            margin-bottom: 30px;
-            color: #00FF41; /* Green subtitle */
-            text-shadow: none;
-        }
+        /* Text & Links */
+        p, li { font-size: 1.1em; margin-bottom: 15px; max-width: 800px; }
+        a { color: #00FF41; text-decoration: none; border-bottom: 1px dotted #00FF41; transition: color 0.3s ease, text-shadow 0.3s ease; }
+        a:hover { color: #ffffff; text-shadow: 0 0 8px #00FF41; }
 
-
-        h2.heading { /* Style for section headings consistent with old portfolio */
-            font-size: 2.5em; /* Larger section headings */
-            width: 100%; /* Make heading span width */
-            text-align: center;
-            margin-bottom: 50px; /* More space below heading */
-            color: #00FF41; /* Green headings */
-        }
-
-        h3 {
-             font-size: 1.6em;
-        }
-        h4 {
-            font-size: 1.2em;
-            color: #bbbbbb; /* Lighter grey for sub-titles like dates/roles */
-            text-shadow: none;
-            font-weight: normal;
-            margin-bottom: 10px;
-        }
-
-
-        p, li {
-            font-size: 1.1em;
-            margin-bottom: 15px;
-            max-width: 800px; /* Limit text width for readability */
-        }
-
-        a {
-            color: #00FF41;
-            text-decoration: none;
-            border-bottom: 1px dotted #00FF41;
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-        }
-
-        a:hover {
-            color: #ffffff;
-            text-shadow: 0 0 8px #00FF41;
-        }
-
-        /* Button Styling (Matrix Style) */
-        .matrix-button {
-            display: inline-block;
-            background-color: transparent;
-            border: 2px solid #00FF41;
-            color: #00FF41;
-            padding: 12px 25px;
-            font-size: 1.1em;
-            font-family: 'Courier New', Courier, monospace;
-            cursor: pointer;
-            margin-top: 15px; /* Adjusted margin */
-            margin-right: 10px; /* Space between buttons */
-            text-decoration: none; /* Remove underline from button links */
-            border-bottom: none; /* Remove dotted line from button links */
+        /* Buttons */
+        .matrix-button, button[type="submit"], .game-controls button, .touch-button {
+            display: inline-block; background-color: transparent; border: 2px solid #00FF41;
+            color: #00FF41; padding: 12px 25px; font-size: 1.1em;
+            font-family: 'Courier New', Courier, monospace; cursor: pointer;
+            margin: 10px 5px; text-decoration: none; border-bottom: none;
             transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 0 5px #00FF41;
+            box-shadow: 0 0 5px #00FF41; vertical-align: middle;
         }
-
-        .matrix-button:hover {
-            background-color: #00FF41;
-            color: #000000;
-            box-shadow: 0 0 15px #00FF41, 0 0 25px #00FF41;
-            border-bottom: none; /* Ensure no border on hover */
+        .matrix-button:hover, button[type="submit"]:hover, .game-controls button:hover:not(#close-game-button):not(#try-again-button), .touch-button:active:not(.fire) {
+            background-color: #00FF41; color: #000000;
+            box-shadow: 0 0 15px #00FF41, 0 0 25px #00FF41; border-bottom: none;
         }
+        button[type="submit"] { margin-top: 30px; } /* Specific margin for submit */
 
-         /* Specific styling for submit button */
-         button[type="submit"] {
-            display: inline-block;
-            background-color: transparent;
-            border: 2px solid #00FF41;
-            color: #00FF41;
-            padding: 12px 25px;
-            font-size: 1.1em;
-            font-family: 'Courier New', Courier, monospace;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 0 5px #00FF41;
-         }
-         button[type="submit"]:hover {
-             background-color: #00FF41;
-             color: #000000;
-             box-shadow: 0 0 15px #00FF41, 0 0 25px #00FF41;
-         }
+        /* About Section */
+        #about .container { max-width: 1000px; width: 100%; }
+        #about .row { display: flex; flex-wrap: wrap; justify-content: center; }
+        #about .col-md-4, #about .col-md-8 { padding: 15px; }
+        #about .col-md-4 { flex: 0 0 33.33%; max-width: 33.33%; text-align: right; }
+        #about .col-md-8 { flex: 0 0 66.66%; max-width: 66.66%; text-align: left; }
+        #about .col-md-8 p { max-width: none; }
 
+        /* Experience Timeline */
+        #experience-timeline { position: relative; width: 100%; max-width: 800px; padding: 30px 0; }
+        #experience-timeline::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 3px; height: 100%; background-color: #00FF41; box-shadow: 0 0 5px #00FF41; }
+        .timeline-block { position: relative; margin-bottom: 50px; width: calc(50% - 40px); padding: 20px; background-color: rgba(0, 0, 0, 0.85); border: 1px solid #00FF41; box-shadow: 0 0 10px rgba(0, 255, 65, 0.5); text-align: left; }
+        .timeline-block:nth-child(odd) { float: left; clear: right; transform: translateX(-30px); }
+        .timeline-block:nth-child(even) { float: right; clear: left; transform: translateX(30px); }
+        #experience-timeline::after { content: ""; display: table; clear: both; }
+        .timeline-block .timeline-marker { content: ''; position: absolute; top: 20px; width: 15px; height: 15px; background-color: #000; border: 2px solid #00FF41; border-radius: 50%; z-index: 1; box-shadow: 0 0 8px #00FF41; }
+        .timeline-block:nth-child(odd) .timeline-marker { right: -38px; }
+        .timeline-block:nth-child(even) .timeline-marker { left: -38px; }
+        .timeline-block h3 { margin-top: 0; color: #00FF41; text-shadow: none; font-size: 1.4em; margin-bottom: 5px; }
+        .timeline-block h4 { font-size: 1.1em; color: #ccc; margin-bottom: 15px; }
+        .timeline-block p { font-size: 1em; line-height: 1.5; margin-bottom: 0; max-width: none; }
+        .timeline-block p br { content: ""; display: block; margin-bottom: 8px; }
 
-        /* About Me Section Specific */
-        #about .container { /* Mimic container structure */
-             max-width: 1000px;
-             width: 100%;
-        }
-        #about .row {
-             display: flex;
-             flex-wrap: wrap;
-             justify-content: center;
-        }
-        #about .col-md-4, #about .col-md-8 { /* Basic column setup */
-             padding: 15px;
-        }
-        #about .col-md-4 {
-             flex: 0 0 33.33%;
-             max-width: 33.33%;
-             text-align: right;
-        }
-         #about .col-md-8 {
-             flex: 0 0 66.66%;
-             max-width: 66.66%;
-             text-align: left;
-         }
-         #about .col-md-8 p {
-             max-width: none; /* Remove max width for this paragraph */
-         }
+         /* Education Block */
+         .education-block { background-color: rgba(0, 0, 0, 0.8); border: 1px solid #00FF41; padding: 25px; margin-bottom: 30px; max-width: 700px; width: 100%; text-align: left; transition: box-shadow 0.3s ease; }
+         .education-block:hover { box-shadow: 0 0 15px #00FF41; }
+         .education-block h3 { margin-top: 0; margin-bottom: 5px; color: #00FF41; text-shadow: none; font-size: 1.4em; }
+         .education-block .education-date { display: block; color: #ccc; margin-bottom: 10px; font-size: 0.9em; }
+         .education-block h4 { font-size: 1.1em; color: #ffffff; margin-bottom: 15px; }
+         .education-block p { font-size: 1em; max-width: none; margin-bottom: 10px; }
+         .education-block p a { display: inline-block; margin-right: 15px; margin-bottom: 5px; }
 
+        /* Project Card */
+        #projects .container { max-width: 1200px; width: 100%; }
+        #projects .row { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
+        .project { background: rgba(0, 0, 0, 0.85); border: 1px solid #00FF41; box-shadow: 0 5px 15px rgba(0, 255, 65, 0.3); transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; width: calc(33.33% - 20px); max-width: 350px; text-align: left; overflow: hidden; }
+        .project:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0, 255, 65, 0.5); }
+        .project-image { height: 250px; overflow: hidden; background-color: #111; }
+        .project-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .project:hover .project-image img { transform: scale(1.05); }
+        .project-info { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+        .project-info h3 { margin-top: 0; margin-bottom: 15px; color: #00FF41; text-shadow: none; font-size: 1.4em; }
+        .project-info p { font-size: 0.95em; margin-bottom: 20px; flex-grow: 1; max-width: none; }
+        .project-info p ul { list-style: none; padding: 0; }
+        .project-info p li { margin-bottom: 0; font-size: 1em; }
+        .project-info a { display: inline-block; padding: 8px 15px; border: 1px solid #00FF41; color: #00FF41; text-align: center; align-self: flex-start; margin-top: auto; border-bottom: 1px solid #00FF41; }
+        .project-info a:hover { background-color: #00FF41; color: #000; border-bottom: 1px solid #000; }
 
-        /* Experience Timeline Styling (Adapted) */
-        #experience-timeline {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            padding: 30px 0;
-        }
+        /* Skills List */
+        #skills ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; max-width: 900px; }
+        #skills li { background-color: rgba(0, 255, 65, 0.1); border: 1px solid #00FF41; padding: 8px 15px; border-radius: 4px; transition: transform 0.2s ease, box-shadow 0.2s ease; margin-bottom: 0; }
+        #skills li:hover { transform: scale(1.1); box-shadow: 0 0 10px #00FF41; }
 
-        /* Timeline line */
-        #experience-timeline::before {
-            content: '';
+        /* Contact Form */
+        .contact-form { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 500px; }
+        .contact-form input, .contact-form textarea { background-color: rgba(0, 0, 0, 0.8); border: 1px solid #00FF41; color: #00FF41; padding: 10px; font-family: 'Courier New', Courier, monospace; font-size: 1em; border-radius: 3px; }
+        .contact-form input::placeholder, .contact-form textarea::placeholder { color: rgba(0, 255, 65, 0.5); opacity: 1; }
+        .contact-form input:focus, .contact-form textarea:focus { outline: none; box-shadow: 0 0 10px #00FF41; }
+        .contact-form textarea { resize: vertical; min-height: 100px; }
+        #contact .contact-links { margin-top: 30px; font-size: 1.1em; }
+        #contact .contact-links a, #contact .contact-links span { margin: 0 10px; }
+        #contact .contact-links span { color: #ccc; border-bottom: none; }
+
+        /* Section Fade-in */
+        .section { opacity: 0; transform: translateY(30px); transition: opacity 1s ease-out, transform 1s ease-out; }
+        .section.visible { opacity: 1; transform: translateY(0); }
+
+        /* Game Overlay */
+        #game-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.95); z-index: 100; display: none; flex-direction: column; justify-content: center; align-items: center; color: #00FF41; font-family: 'Courier New', Courier, monospace; }
+        #game-overlay.active { display: flex; }
+        #space-game-canvas { border: 2px solid #00FF41; box-shadow: 0 0 15px #00FF41; background-color: #000; max-width: 95%; max-height: 70%; aspect-ratio: 16 / 9; touch-action: none; }
+
+        /* Game Controls */
+        .game-controls { margin-top: 15px; text-align: center; width: 90%; max-width: 600px; }
+        .game-controls p { margin-bottom: 10px; font-size: 0.9em; color: #ccc; }
+        @media (max-height: 500px), (max-width: 600px) { .game-controls p.keyboard-instructions { display: none; } }
+
+        /* Touch Controls */
+        .touch-controls { display: flex; justify-content: space-between; width: 100%; margin-top: 10px; }
+        .touch-button { background-color: rgba(0, 255, 65, 0.2); border: 2px solid #00FF41; color: #00FF41; padding: 15px 20px; font-size: 1.5em; cursor: pointer; box-shadow: 0 0 5px #00FF41; border-radius: 5px; user-select: none; -webkit-user-select: none; flex-grow: 1; margin: 0 5px; text-align: center; }
+        .touch-button.fire { flex-grow: 0.5; background-color: rgba(255, 0, 0, 0.3); border-color: #ff0000; color: #ff0000; box-shadow: 0 0 5px #ff0000; }
+        .touch-button:active { background-color: rgba(0, 255, 65, 0.5); box-shadow: 0 0 15px #00FF41; }
+        .touch-button.fire:active { background-color: rgba(255, 0, 0, 0.6); box-shadow: 0 0 15px #ff0000; }
+
+        /* Close Game Button */
+        .game-controls button#close-game-button { border: 2px solid #aaa; color: #aaa; padding: 10px 20px; font-size: 1em; margin-top: 20px; box-shadow: 0 0 5px #aaa; }
+        .game-controls button#close-game-button:hover { background-color: #aaa; color: #000; box-shadow: 0 0 15px #aaa; }
+
+        /* Game UI Elements */
+        #score-display { position: absolute; top: 15px; left: 15px; font-size: 1.2em; color: #00FF41; text-shadow: 0 0 5px #00FF41; z-index: 101; }
+        #lives-display { /* Style for the life bar container */
             position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 3px;
-            height: 100%;
-            background-color: #00FF41; /* Matrix green line */
-            box-shadow: 0 0 5px #00FF41;
+            top: 15px;
+            right: 15px;
+            height: 20px; /* Height of the bar */
+            width: 150px; /* Max width of the bar */
+            background-color: rgba(255, 0, 0, 0.5); /* Red background */
+            border: 1px solid #ff0000;
+            z-index: 101;
+            overflow: hidden; /* Hide overflow for inner bar */
+        }
+        #life-bar-inner { /* The green part showing current health */
+             height: 100%;
+             width: 100%; /* Start full */
+             background-color: #00FF41; /* Green health */
+             transition: width 0.3s ease; /* Smooth transition when losing life */
         }
 
-        .timeline-block {
-            position: relative;
-            margin-bottom: 50px;
-            width: calc(50% - 40px); /* Adjust width for spacing */
-            padding: 20px;
-            background-color: rgba(0, 0, 0, 0.85); /* Darker background */
-            border: 1px solid #00FF41;
-            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
-            text-align: left;
-        }
-
-        /* Position blocks left and right */
-        .timeline-block:nth-child(odd) {
-            float: left;
-            clear: right;
-            transform: translateX(-30px); /* Offset from center line */
-        }
-
-        .timeline-block:nth-child(even) {
-            float: right;
-            clear: left;
-             transform: translateX(30px); /* Offset from center line */
-        }
-
-        /* Clear floats */
-        #experience-timeline::after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        /* Timeline date marker */
-        .timeline-block .timeline-marker {
-            content: '';
-            position: absolute;
-            top: 20px; /* Align with top padding */
-            width: 15px;
-            height: 15px;
-            background-color: #000;
-            border: 2px solid #00FF41;
-            border-radius: 50%;
-            z-index: 1;
-            box-shadow: 0 0 8px #00FF41;
-        }
-
-        .timeline-block:nth-child(odd) .timeline-marker {
-            right: -38px; /* Position marker on the line */
-        }
-
-        .timeline-block:nth-child(even) .timeline-marker {
-            left: -38px; /* Position marker on the line */
-        }
-
-        .timeline-block h3 {
-            margin-top: 0;
-            color: #00FF41; /* Green title */
-            text-shadow: none;
-            font-size: 1.4em;
-            margin-bottom: 5px;
-        }
-         .timeline-block h4 {
-             font-size: 1.1em;
-             color: #ccc; /* Lighter subtitle */
-             margin-bottom: 15px;
-         }
-         .timeline-block p {
-             font-size: 1em;
-             line-height: 1.5;
-             margin-bottom: 0;
-             max-width: none;
-         }
-         .timeline-block p br { /* Improve spacing after breaks */
-             content: "";
-             display: block;
-             margin-bottom: 8px;
-         }
-
-         /* Education Block Styling */
-         .education-block {
-             background-color: rgba(0, 0, 0, 0.8);
-             border: 1px solid #00FF41;
-             padding: 25px;
-             margin-bottom: 30px;
-             max-width: 700px;
-             width: 100%;
-             text-align: left;
-             transition: box-shadow 0.3s ease;
-         }
-         .education-block:hover {
-              box-shadow: 0 0 15px #00FF41;
-         }
-         .education-block h3 {
-             margin-top: 0;
-             margin-bottom: 5px;
-             color: #00FF41;
-             text-shadow: none;
-             font-size: 1.4em;
-         }
-         .education-block .education-date {
-             display: block;
-             color: #ccc;
-             margin-bottom: 10px;
-             font-size: 0.9em;
-         }
-         .education-block h4 {
-             font-size: 1.1em;
-             color: #ffffff;
-             margin-bottom: 15px;
-         }
-          .education-block p {
-              font-size: 1em;
-              max-width: none;
-              margin-bottom: 10px; /* Space before links */
-          }
-          .education-block p a {
-              display: inline-block; /* Make links blocky */
-              margin-right: 15px; /* Space out links */
-              margin-bottom: 5px;
-          }
-
-
-        /* Project Card Styling (Adapted from old portfolio) */
-        #projects .container {
-             max-width: 1200px; /* Allow wider container for projects */
-             width: 100%;
-        }
-         #projects .row {
-             display: flex;
-             flex-wrap: wrap;
-             justify-content: center;
-             gap: 30px; /* Add gap between project cards */
-         }
-
-        .project {
-            background: rgba(0, 0, 0, 0.85); /* Dark background */
-            border: 1px solid #00FF41;
-            box-shadow: 0 5px 15px rgba(0, 255, 65, 0.3); /* Green shadow */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex; /* Use flexbox for layout */
-            flex-direction: column; /* Stack image and info */
-            width: calc(33.33% - 20px); /* Adjust width for 3 columns with gap */
-            max-width: 350px; /* Max width per card */
-            text-align: left;
-            overflow: hidden; /* Hide overflow */
-        }
-
-        .project:hover {
-             transform: translateY(-5px);
-             box-shadow: 0 10px 20px rgba(0, 255, 65, 0.5);
-        }
-
-        .project-image {
-            height: 250px; /* Fixed height for image container */
-            overflow: hidden;
-            background-color: #111; /* Placeholder background */
-        }
-
-        .project-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Cover the area, might crop */
-            transition: transform 0.3s ease;
-        }
-        .project:hover .project-image img {
-            transform: scale(1.05); /* Slight zoom on hover */
-        }
-
-        .project-info {
-            padding: 25px;
-            flex-grow: 1; /* Allow info to take remaining space */
-            display: flex;
-            flex-direction: column;
-        }
-
-        .project-info h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: #00FF41;
-            text-shadow: none;
-            font-size: 1.4em;
-        }
-
-        .project-info p {
-            font-size: 0.95em; /* Slightly smaller text */
-            margin-bottom: 20px;
-            flex-grow: 1; /* Push button to bottom */
-            max-width: none;
-        }
-         .project-info p ul { /* Remove list styling if needed */
-            list-style: none;
-            padding: 0;
-         }
-          .project-info p li {
-             margin-bottom: 0;
-             font-size: 1em;
-          }
-
-
-        .project-info a { /* Button-like link */
-            display: inline-block;
-            padding: 8px 15px;
-            border: 1px solid #00FF41;
-            color: #00FF41;
-            text-align: center;
-            align-self: flex-start; /* Align button left */
-            margin-top: auto; /* Push to bottom */
-             border-bottom: 1px solid #00FF41; /* Keep border consistent */
-        }
-
-        .project-info a:hover {
-            background-color: #00FF41;
-            color: #000;
-             border-bottom: 1px solid #000;
-        }
-
-
-        /* Skills List Styling */
-        #skills ul {
-            list-style: none; /* Remove default bullets */
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px; /* Spacing between skills */
-            max-width: 900px; /* Limit width of skills area */
-        }
-
-        #skills li {
-            background-color: rgba(0, 255, 65, 0.1); /* Faint green background */
-            border: 1px solid #00FF41;
-            padding: 8px 15px;
-            border-radius: 4px; /* Slightly rounded corners */
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            margin-bottom: 0; /* Override default li margin */
-        }
-
-         #skills li:hover {
-             transform: scale(1.1); /* Slight zoom on hover */
-             box-shadow: 0 0 10px #00FF41;
-         }
-
-
-        /* Contact Form Styling */
-        .contact-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .contact-form input,
-        .contact-form textarea {
-            background-color: rgba(0, 0, 0, 0.8);
-            border: 1px solid #00FF41;
-            color: #00FF41;
-            padding: 10px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1em;
-            border-radius: 3px;
-        }
-
-        .contact-form input::placeholder,
-        .contact-form textarea::placeholder { /* Style placeholders */
-            color: rgba(0, 255, 65, 0.5);
-            opacity: 1; /* Override browser defaults */
-        }
-
-        .contact-form input:focus,
-        .contact-form textarea:focus {
-            outline: none;
-            box-shadow: 0 0 10px #00FF41;
-        }
-
-        .contact-form textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        /* Contact Links */
-        #contact .contact-links {
-             margin-top: 30px;
-             font-size: 1.1em;
-        }
-        #contact .contact-links a,
-        #contact .contact-links span {
-             margin: 0 10px; /* Spacing between links/info */
-        }
-         #contact .contact-links span { /* Non-link contact info */
+        #game-over-message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3.5em; /* Larger WASTED text */ color: #ff0000; text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; display: none; text-align: center; z-index: 101; }
+        #game-over-message span { display: block; font-size: 0.4em; /* Smaller subtext */ color: #ccc; text-shadow: none; margin-top: 15px; }
+        #try-again-button { /* Style like other matrix buttons */
+            display: none; /* Hidden initially */
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 0.8em; /* Smaller button text */
+            border-color: #ccc; /* Grey border */
             color: #ccc;
-            border-bottom: none;
-         }
-
-
-        /* Simple fade-in animation for sections */
-        .section {
-            opacity: 0;
-            transform: translateY(30px); /* Slightly larger offset */
-            transition: opacity 1s ease-out, transform 1s ease-out;
+            box-shadow: 0 0 5px #ccc;
+        }
+        #try-again-button:hover {
+             background-color: #ccc; color: #000;
+             box-shadow: 0 0 15px #ccc;
         }
 
-        .section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
 
-        /* Responsive adjustments */
-         @media (max-width: 992px) { /* Medium devices (tablets, smaller desktops) */
-             .project {
-                 width: calc(50% - 15px); /* 2 columns */
-                 max-width: none;
-             }
-             #about .col-md-4, #about .col-md-8 {
-                 flex: 0 0 100%;
-                 max-width: 100%;
-                 text-align: center; /* Center align on smaller screens */
-             }
-              #about .col-md-8 p {
-                 text-align: left; /* Keep paragraph left aligned */
-             }
-             #experience-timeline::before {
-                left: 30px; /* Move line to left */
-                transform: translateX(0);
-             }
-             .timeline-block {
-                 width: calc(100% - 50px); /* Full width minus padding/margin */
-                 float: right; /* Stack all on right */
-                 clear: both;
-                 transform: translateX(0); /* Reset transform */
-                 margin-left: 50px; /* Space from line */
-                 margin-bottom: 30px;
-             }
-              .timeline-block:nth-child(odd) {
-                 transform: translateX(0);
-                 float: right;
-             }
-              .timeline-block:nth-child(even) {
-                 transform: translateX(0);
-                 float: right;
-             }
-             .timeline-block .timeline-marker {
-                 left: -48px; /* Position marker on the left line */
-                 top: 25px;
-             }
-             .timeline-block:nth-child(odd) .timeline-marker,
-             .timeline-block:nth-child(even) .timeline-marker {
-                 left: -48px;
-             }
-
+        /* Responsive Adjustments */
+         @media (max-width: 992px) {
+             .project { width: calc(50% - 15px); max-width: none; }
+             #about .col-md-4, #about .col-md-8 { flex: 0 0 100%; max-width: 100%; text-align: center; }
+             #about .col-md-8 p { text-align: left; }
+             #experience-timeline::before { left: 30px; transform: translateX(0); }
+             .timeline-block { width: calc(100% - 50px); float: right; clear: both; transform: translateX(0); margin-left: 50px; margin-bottom: 30px; }
+             .timeline-block:nth-child(odd) { transform: translateX(0); float: right; }
+             .timeline-block:nth-child(even) { transform: translateX(0); float: right; }
+             .timeline-block .timeline-marker { left: -48px; top: 25px; }
+             .timeline-block:nth-child(odd) .timeline-marker, .timeline-block:nth-child(even) .timeline-marker { left: -48px; }
          }
-
-         @media (max-width: 768px) { /* Small devices (landscape phones, larger tablets) */
-            h1 { font-size: 2.5em; }
-            h2.heading { font-size: 2em; margin-bottom: 40px;}
-            .section { padding: 60px 5%; }
-            .profile-pic { width: 120px; height: 120px; }
+         @media (max-width: 768px) {
+            h1 { font-size: 2.5em; } h2.heading { font-size: 2em; margin-bottom: 40px;}
+            .section { padding: 60px 5%; } .profile-pic { width: 120px; height: 120px; }
             .matrix-button { font-size: 1em; padding: 10px 20px;}
+            #space-game-canvas { max-height: 75%; }
+            .touch-button { padding: 12px 15px; font-size: 1.2em; }
+            #score-display { font-size: 1em; }
+            #lives-display { width: 120px; height: 18px; }
+            #game-over-message { font-size: 2.5em; }
          }
-         @media (max-width: 576px) { /* Extra small devices (portrait phones) */
-            h1 { font-size: 2em; }
-            h2.heading { font-size: 1.8em; }
+         @media (max-width: 576px) {
+            h1 { font-size: 2em; } h2.heading { font-size: 1.8em; }
             .profile-pic { width: 100px; height: 100px; }
             #skills li { font-size: 0.9em; padding: 6px 10px; }
-            .project {
-                 width: 100%; /* 1 column */
-            }
-             .education-block, .experience-card { padding: 20px; } /* Use experience-card for consistency */
-             #contact .contact-links a,
-             #contact .contact-links span {
-                 display: block; /* Stack contact links */
-                 margin: 5px 0;
-             }
-              #experience-timeline::before {
-                 left: 15px; /* Move line further left */
-             }
-              .timeline-block {
-                 width: calc(100% - 30px);
-                 margin-left: 30px;
-             }
-             .timeline-block .timeline-marker {
-                 left: -33px;
-             }
-              .timeline-block:nth-child(odd) .timeline-marker,
-             .timeline-block:nth-child(even) .timeline-marker {
-                 left: -33px;
-             }
+            .project { width: 100%; }
+            .education-block, .experience-card { padding: 20px; }
+            #contact .contact-links a, #contact .contact-links span { display: block; margin: 5px 0; }
+            #experience-timeline::before { left: 15px; }
+            .timeline-block { width: calc(100% - 30px); margin-left: 30px; }
+            .timeline-block .timeline-marker { left: -33px; }
+            .timeline-block:nth-child(odd) .timeline-marker, .timeline-block:nth-child(even) .timeline-marker { left: -33px; }
+            #game-over-message { font-size: 2em; }
+            #score-display { font-size: 0.9em; top: 10px; left: 10px; }
+            #lives-display { top: 10px; right: 10px; width: 100px; height: 15px; }
+            .game-controls p { font-size: 0.8em;}
+            .touch-button { padding: 10px 15px; font-size: 1.1em; }
+            .game-controls button#close-game-button { font-size: 0.9em; padding: 8px 15px; }
+            #try-again-button { font-size: 0.7em; }
         }
+        .touch-button { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
 
     </style>
 </head>
@@ -638,12 +303,13 @@
     <div class="content-container">
 
         <section id="hero" class="section">
-            <img src="images/me.jpg" alt="Sibusiso Ntuli" class="profile-pic" onerror="this.src='https://placehold.co/150x150/000000/00FF41?text=Profile+Pic'; this.onerror=null;">
+            <img src="https://placehold.co/150x150/000000/00FF41?text=SN" alt="Sibusiso Ntuli" class="profile-pic" onerror="this.src='https://placehold.co/150x150/000000/00FF41?text=Profile+Pic'; this.onerror=null;">
             <h1>Sibusiso Ntuli</h1>
             <p class="subtitle">Junior Software Engineer</p>
-            <div>
+            <div id="hero-buttons">
                  <a href="#about" class="matrix-button">Enter the Construct</a>
-                 <a href="https://drive.google.com/file/d/1CQL2Gms6cSFoI5XeNuyP1S9bR4obGG2N/view?usp=sharing" target="_blank" rel="noopener" class="matrix-button">Download Resume</a>
+                 <a href="https://drive.google.com/file/d/1aBn_tlOnFGHzfblQgKaEr_Si68tLt1tJ/view?usp=sharing" target="_blank" rel="noopener" class="matrix-button">Download Resume</a>
+                 <button id="launch-game-button" class="matrix-button">Launch Game</button>
             </div>
         </section>
 
@@ -655,10 +321,10 @@
                     </div>
                     <div class="col-md-8">
                         <p>
-                            <strong>Software Engineer</strong>
+                            <strong>🚀 Computer Science Graduate | Mainframe Developer intern | Passionate about Technology 🌟</strong>
                         </p>
                         <p>
-                            I'm a driven Software Engineer specializing in backend Development, I bring a passion for innovation and a commitment to delivering impactful solutions. My recent graduation from Varsity College equipped me with a strong foundation in computer science and the drive to explore emerging technologies like blockchain, artificial intelligence, robotics, and drone systems.
+                            As a driven Software Engineer Intern specializing in mainframe technologies at Standard Bank, I bring a passion for innovation and a commitment to delivering impactful solutions. My recent graduation from Varsity College equipped me with a strong foundation in computer science and the drive to explore emerging technologies like blockchain, artificial intelligence, robotics, and drone systems.
                         </p>
                         <p>
                             A space enthusiast at heart, I’m inspired by the intersection of technology and exploration, always seeking opportunities to push boundaries and create transformative solutions. Outside of tech, my experiences as an athlete and gardener reflect my dedication to growth, resilience, and precision—qualities I bring to every project I undertake.
@@ -679,12 +345,12 @@
                      <h3>Standard Bank Group</h3>
                      <h4>Mainframe Developer Intern - Johannesburg (May 2024 – Present)</h4>
                      <p>
-                         • Developed a foundational understanding of how large systems function.<br/>
-                         • Assisted in the installation, configuration, and maintenance of Mainframe software.<br/>
-                         • Executed routine tasks (change management, job scheduling, Knowledge sharing, incident management.<br/>
-                         • Collaborated with senior professionals to troubleshoot technical issues.<br/>
-                         • Participated in the development of various projects for various systems.<br/>
-                         • Staying updated on emerging trends in technology.
+                         • Develop a foundational understanding of Mainframe systems.<br/>
+                         • Assist in the installation, configuration, and maintenance of Mainframe software.<br/>
+                         • Execute routine Mainframe tasks (file management, job scheduling, monitoring).<br/>
+                         • Collaborate with senior professionals to troubleshoot technical issues.<br/>
+                         • Participate in Mainframe-related projects.<br/>
+                         • Stay updated on emerging trends in Mainframe technology.
                      </p>
                  </div>
                  <div class="timeline-block">
@@ -692,19 +358,17 @@
                      <h3>Freelance Work</h3>
                      <h4>Back-end Developer - Online (Feb 2023 – Jan 2024)</h4>
                      <p>
-                         • Developed project concepts and maintain optimal workflow.<br/>
-                         • Collaborated with developers on large, complex design projects.<br/>
-                         • Completed the development of various projects.<br/>
-                         • Carried out quality assurance tests to discover errors and optimize usability.
+                         • Develop project concepts and maintain optimal workflow.<br/>
+                         • Collaborate with developers on large, complex design projects.<br/>
+                         • Complete programming for mobile/desktop apps, websites, and back-end code.<br/>
+                         • Carry out quality assurance tests to discover errors and optimize usability.
                      </p>
                  </div>
-
             </div>
         </section>
 
         <section id="education" class="section">
              <h2 class="heading">Education</h2>
-
              <div class="education-block">
                  <h3>IIE Varsity College Waterfall</h3>
                  <span class="education-date">Jan 2021 - Dec 2023</span>
@@ -715,9 +379,9 @@
                  </p>
                  <p>
                      <a href="https://drive.google.com/file/d/1Tub-pFHvW7BqhTIQ27UEsDDSOy6OaB4b/view?usp=sharing" target="_blank" rel="noopener">Academic Transcript</a>
+                     <a href="https://drive.google.com/file/d/11zRDC5DwCPiY507Tuznc04nsxQjArFXk/view?usp=sharing" target="_blank" rel="noopener">Graduation Confirmation</a>
                  </p>
              </div>
-
              <div class="education-block">
                  <h3>Online Certifications (Simplilearn, Programming Hub)</h3>
                  <span class="education-date">Apr 2023 - Jan 2024</span>
@@ -727,10 +391,9 @@
                      Introduction To Digital Transformation With Google Cloud, Blockchain Developer Training, and Introduction To Generative AI.
                  </p>
                  <p>
-                     <a href="https://drive.google.com/drive/folders/1UkxPyljJdPUycF4BHTs6pTmtVwaKslB4?usp=sharing" target="_blank" rel="noopener">Certificates</a>
+                     <a href="https://drive.google.com/drive/folders/1UkxPyljJdPUycF4BHTs6pTmtVwaKslB4?usp=sharing" target="_blank" rel="noopener">View Certificates</a>
                  </p>
              </div>
-
              <div class="education-block">
                  <h3>Eureka High School</h3>
                  <span class="education-date">Jan 2015 - Dec 2020</span>
@@ -743,7 +406,6 @@
                  </p>
              </div>
         </section>
-
 
         <section id="projects" class="section background-alt">
             <h2 class="heading">My Open-Source Projects</h2>
@@ -833,7 +495,6 @@
                             <a href="https://github.com/CODIEX0/DeweyDecimalClassification" target="_blank" rel="noopener">View Project</a>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -841,41 +502,19 @@
         <section id="skills" class="section">
             <h2 class="heading">Skills</h2>
             <ul>
-                <li>Java</li>
-                <li>Kotlin</li>
-                <li>SQL</li>
-                <li>NoSQL</li>
-                <li>C#</li>
-                <li>.NET</li>
-                <li>Python</li>
-                <li>Restful API's</li>
-                <li>JavaScript</li>
-                <li>Angular.Js</li>
-                <li>Node.js</li>
-                <li>HTML</li>
-                <li>CSS</li>
-                <li>COBOL</li>
-                <li>Z/OS</li>
-                <li>CICS</li>
-                <li>DB2</li>
-                <li>JCL</li>
-                <li>Git Version Control</li>
-                <li>Ethereum Smart Contracts</li>
-                <li>Solidity</li>
-                <li>Docker</li>
-                <li>Agile Methodologies</li>
-                <li>AWS / Azure / GCP</li>
-                <li>Json</li>
-                <li>WPF</li> 
-                <li>MongoDB</li> 
-                <li>Firebase</li> 
+                <li>Java</li><li>Kotlin</li><li>SQL</li><li>NoSQL</li><li>C#</li><li>.NET</li>
+                <li>Python</li><li>Restful API's</li><li>JavaScript</li><li>Angular.Js</li><li>Node.js</li>
+                <li>HTML</li><li>CSS</li><li>COBOL</li><li>Z/OS</li><li>CICS</li><li>DB2</li><li>JCL</li>
+                <li>Git Version Control</li><li>Ethereum Smart Contracts</li><li>Solidity</li><li>Docker</li>
+                <li>Agile Methodologies</li><li>AWS / Azure / GCP</li><li>Json</li><li>WPF</li>
+                <li>MongoDB</li><li>Firebase</li>
             </ul>
         </section>
 
         <section id="contact" class="section background-alt">
             <h2 class="heading">Establish Connection</h2>
             <p>Ready to unplug or discuss a potential collaboration? Send a signal.</p>
-            <form class="contact-form" action="https://formspree.io/f/mzzejlqa" method="POST">
+            <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
                 <input type="text" name="name" placeholder="Your Name / Alias" required>
                 <input type="email" name="email" placeholder="Your Signal Path (Email)" required>
                 <textarea name="message" placeholder="Your Message..." rows="5" required></textarea>
@@ -886,202 +525,613 @@
                  <p>
                      <a href="https://www.linkedin.com/in/sibusiso-n-b55638247" target="_blank" rel="noopener">LinkedIn</a> |
                      <a href="https://github.com/CODIEX0" target="_blank" rel="noopener">GitHub</a> |
-                     <a href="https://stackoverflow.com/users/23134825/codiex0" rel="noopener" target="_blank">Stack Overflow</a> | 
-                     <a href="https://twitter.com/CodyX07456802" rel="noopener" target="_blank">Twitter</a> | 
+                     <a href="https://stackoverflow.com/users/23134825/codiex0" rel="noopener" target="_blank">Stack Overflow</a> |
+                     <a href="https://twitter.com/CodyX07456802" rel="noopener" target="_blank">Twitter</a> |
                      <span>Email: codyntuli@gmail.com</span> |
                      <span>Phone: 0789305982</span>
                  </p>
              </div>
         </section>
 
-    </div> <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    </div> <div id="game-overlay">
+        <canvas id="space-game-canvas"></canvas>
+        <div id="score-display">Score: 0</div>
+        <div id="lives-display">
+            <div id="life-bar-inner"></div>
+        </div>
+        <div id="game-over-message">
+            WASTED
+            <button id="try-again-button">Try Again</button>
+        </div>
+        <div class="game-controls">
+            <p class="keyboard-instructions">Use Arrow Keys (◀ ▶) to Move, Spacebar to Fire</p>
+            <div class="touch-controls">
+                <button class="touch-button" id="touch-left">◀</button>
+                <button class="touch-button fire" id="touch-fire">🔥</button>
+                <button class="touch-button" id="touch-right">▶</button>
+            </div>
+            <button id="close-game-button">Close Game</button>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
-        // --- Three.js Setup ---
-        const canvas = document.getElementById('matrix-canvas');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true }); // alpha: true for transparent background
+        // --- Three.js Background Setup (No Changes Here) ---
+        const bgCanvas = document.getElementById('matrix-canvas');
+        const bgScene = new THREE.Scene();
+        const bgCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const bgRenderer = new THREE.WebGLRenderer({ canvas: bgCanvas, alpha: true });
+        bgRenderer.setSize(window.innerWidth, window.innerHeight);
+        bgRenderer.setPixelRatio(window.devicePixelRatio);
+        const bgAmbientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        bgScene.add(bgAmbientLight);
+        const bgPointLight = new THREE.PointLight(0x00ff41, 1, 100);
+        bgPointLight.position.set(0, 10, 30);
+        bgScene.add(bgPointLight);
+        const bgParticleCount = 8000; const bgParticleSize = 0.15; const bgFallSpeed = 0.03; const bgStreamLength = 25;
+        const bgParticlesGeometry = new THREE.BufferGeometry(); const bgPositions = []; const bgColors = []; const bgVelocities = [];
+        const bgMatrixGreen = new THREE.Color(0x00FF41); const bgBrightGreen = new THREE.Color(0x90EE90); const bgWhite = new THREE.Color(0xFFFFFF);
+        for (let i = 0; i < bgParticleCount; i++) { const x = THREE.MathUtils.randFloatSpread(100); const y = THREE.MathUtils.randFloat(0, 100); const z = THREE.MathUtils.randFloatSpread(50); bgPositions.push(x, y, z); bgVelocities.push({ speed: THREE.MathUtils.randFloat(bgFallSpeed * 0.5, bgFallSpeed * 1.5), isLeading: Math.random() < 1 / bgStreamLength }); bgColors.push(bgMatrixGreen.r, bgMatrixGreen.g, bgMatrixGreen.b); }
+        bgParticlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(bgPositions, 3)); bgParticlesGeometry.setAttribute('color', new THREE.Float32BufferAttribute(bgColors, 3));
+        const bgParticlesMaterial = new THREE.PointsMaterial({ size: bgParticleSize, vertexColors: true, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, sizeAttenuation: true });
+        const bgRain = new THREE.Points(bgParticlesGeometry, bgParticlesMaterial); bgScene.add(bgRain);
+        const bgUfoGeometry = new THREE.ConeGeometry(0.8, 0.3, 16); const bgUfoMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.8, roughness: 0.4 }); const bgUfo = new THREE.Mesh(bgUfoGeometry, bgUfoMaterial); bgUfo.rotation.x = Math.PI; bgScene.add(bgUfo);
+        const bgBugGeometry = new THREE.SphereGeometry(0.2, 8, 8); const bgBugMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 }); const bgBug = new THREE.Mesh(bgBugGeometry, bgBugMaterial); bgScene.add(bgBug);
+        let bgBugTargetPosition = new THREE.Vector3( THREE.MathUtils.randFloatSpread(40), THREE.MathUtils.randFloat(-20, 20), THREE.MathUtils.randFloat(5, 25) );
+        const bgBugSpeed = 0.05; const bgUfoChaseSpeed = 0.03; let bgBugMoveTimer = 0; const bgBugMoveInterval = 100;
+        bgCamera.position.z = 50; let bgAnimationId = null;
+        function animateBackground() { bgAnimationId = requestAnimationFrame(animateBackground); const positionsAttribute = bgParticlesGeometry.getAttribute('position'); const colorsAttribute = bgParticlesGeometry.getAttribute('color'); const currentPositions = positionsAttribute.array; const currentColors = colorsAttribute.array; for (let i = 0; i < bgParticleCount; i++) { const i3 = i * 3; const velocityInfo = bgVelocities[i]; currentPositions[i3 + 1] -= velocityInfo.speed; let color; if (velocityInfo.isLeading) color = bgWhite; else { const yPos = currentPositions[i3 + 1]; const streamProgress = THREE.MathUtils.mapLinear(yPos, 50, -50, 0, 1); color = bgMatrixGreen.clone().lerp(bgBrightGreen, streamProgress * 0.5); } if (currentPositions[i3 + 1] < -50) { currentPositions[i3 + 1] = 50; currentPositions[i3] = THREE.MathUtils.randFloatSpread(100); velocityInfo.isLeading = Math.random() < 1 / bgStreamLength; velocityInfo.speed = THREE.MathUtils.randFloat(bgFallSpeed * 0.5, bgFallSpeed * 1.5); } currentColors[i3] = color.r; currentColors[i3 + 1] = color.g; currentColors[i3 + 2] = color.b; } positionsAttribute.needsUpdate = true; colorsAttribute.needsUpdate = true; bgBugMoveTimer++; if (bgBugMoveTimer > bgBugMoveInterval) { bgBugTargetPosition.set( THREE.MathUtils.randFloatSpread(40), THREE.MathUtils.randFloat(-20, 20), THREE.MathUtils.randFloat(5, 25) ); bgBugMoveTimer = 0; } bgBug.position.lerp(bgBugTargetPosition, bgBugSpeed); bgUfo.position.lerp(bgBug.position, bgUfoChaseSpeed); bgUfo.rotation.z += 0.02; bgUfo.rotation.y += 0.01; bgRenderer.render(bgScene, bgCamera); }
+        function onWindowResizeBackground() { bgCamera.aspect = window.innerWidth / window.innerHeight; bgCamera.updateProjectionMatrix(); bgRenderer.setSize(window.innerWidth, window.innerHeight); bgRenderer.setPixelRatio(window.devicePixelRatio); }
+        window.addEventListener('resize', onWindowResizeBackground, false);
+        const sections = document.querySelectorAll('.section'); const contentContainer = document.querySelector('.content-container');
+        const observerOptions = { root: contentContainer, rootMargin: '0px', threshold: 0.1 };
+        const observer = new IntersectionObserver((entries, observer) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, observerOptions);
+        sections.forEach(section => { observer.observe(section); });
+        document.addEventListener('DOMContentLoaded', () => { const heroSection = document.getElementById('hero'); if (heroSection) heroSection.classList.add('visible'); animateBackground(); });
+        // --- End of Three.js Background Setup ---
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio); // Adjust for high DPI screens
 
-        // --- Lighting ---
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
-        const pointLight = new THREE.PointLight(0x00ff41, 1, 100);
-        pointLight.position.set(0, 10, 30);
-        scene.add(pointLight);
+        // --- Space Game Logic (IIFE Wrapper) ---
+        (function() {
+            const gameOverlay = document.getElementById('game-overlay');
+            const gameCanvas = document.getElementById('space-game-canvas');
+            const ctx = gameCanvas.getContext('2d');
+            const scoreDisplay = document.getElementById('score-display');
+            const livesDisplayContainer = document.getElementById('lives-display'); // Container for bar
+            const lifeBarInner = document.getElementById('life-bar-inner'); // Inner bar element
+            const gameOverMessage = document.getElementById('game-over-message');
+            const tryAgainButton = document.getElementById('try-again-button'); // Get Try Again button
+            const launchGameButton = document.getElementById('launch-game-button');
+            const closeGameButton = document.getElementById('close-game-button');
+            const touchLeftButton = document.getElementById('touch-left');
+            const touchRightButton = document.getElementById('touch-right');
+            const touchFireButton = document.getElementById('touch-fire');
 
-        // --- Digital Rain Parameters ---
-        const particleCount = 8000;
-        const particleSize = 0.15;
-        const fallSpeed = 0.03;
-        const characterSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ<>{}[]()/*&^%$#@!';
-        const streamLength = 25;
+            // --- Game State Variables ---
+            let score = 0;
+            let player = {};
+            let lasers = [];
+            let bugs = [];
+            let stars = []; // Array for starfield
+            let boss = null; // Current boss object
+            let bossLasers = [];
+            let keys = {}; // Input state
+            let bugSpawnTimer = 0;
+            let bugSpawnIntervalBase = 90; // Start slightly faster
+            let bugSpawnInterval = bugSpawnIntervalBase;
+            let bugSpeedBase = 1;
+            let bugSpeed = bugSpeedBase;
+            let gameOver = false;
+            let gameAnimationId = null;
+            let playerWidth = 40;
+            let playerHeight = 40;
+            let bugSize = 35;
+            let bossSize = 60; // Size for boss emoji
+            const initialLives = 10;
+            let difficultyThreshold = 200;
+            let difficultyLevel = 0;
+            let bossIncoming = false; // Flag for boss spawn trigger
+            let bossActive = false; // Flag for boss fight active
+            const finalLevel = 5; // Example level for final boss
 
-        const particlesGeometry = new THREE.BufferGeometry();
-        const positions = [];
-        const colors = [];
-        const velocities = [];
+            // --- Starfield ---
+            function createStars(count) {
+                stars = [];
+                for (let i = 0; i < count; i++) {
+                    stars.push({
+                        x: Math.random() * gameCanvas.width,
+                        y: Math.random() * gameCanvas.height,
+                        radius: Math.random() * 1.5 + 0.5, // Small radius
+                        speed: Math.random() * 0.3 + 0.1 // Slow speed
+                    });
+                }
+            }
 
-        const matrixGreen = new THREE.Color(0x00FF41);
-        const brightGreen = new THREE.Color(0x90EE90);
-        const white = new THREE.Color(0xFFFFFF);
+            function updateStars() {
+                stars.forEach(star => {
+                    star.y += star.speed;
+                    if (star.y > gameCanvas.height + star.radius) {
+                        star.y = -star.radius;
+                        star.x = Math.random() * gameCanvas.width;
+                    }
+                });
+            }
 
-        // --- Create Rain Particles ---
-        for (let i = 0; i < particleCount; i++) {
-            const x = THREE.MathUtils.randFloatSpread(100);
-            const y = THREE.MathUtils.randFloat(0, 100);
-            const z = THREE.MathUtils.randFloatSpread(50);
-            positions.push(x, y, z);
-            velocities.push({
-                speed: THREE.MathUtils.randFloat(fallSpeed * 0.5, fallSpeed * 1.5),
-                isLeading: Math.random() < 1 / streamLength
-            });
-            colors.push(matrixGreen.r, matrixGreen.g, matrixGreen.b);
-        }
+            function drawStars() {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'; // White stars
+                stars.forEach(star => {
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
 
-        particlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        particlesGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
-        const particlesMaterial = new THREE.PointsMaterial({
-            size: particleSize,
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.7,
-            blending: THREE.AdditiveBlending,
-            sizeAttenuation: true
-        });
+            function resizeGameCanvas() {
+                const overlayRect = gameOverlay.getBoundingClientRect();
+                const aspectRatio = 16 / 9;
+                let newWidth = overlayRect.width * 0.95;
+                let newHeight = newWidth / aspectRatio;
 
-        const rain = new THREE.Points(particlesGeometry, particlesMaterial);
-        scene.add(rain);
+                if (newHeight > overlayRect.height * 0.70) {
+                    newHeight = overlayRect.height * 0.70;
+                    newWidth = newHeight * aspectRatio;
+                }
+                gameCanvas.width = Math.floor(newWidth);
+                gameCanvas.height = Math.floor(newHeight);
 
-        // --- UFO and Bug Setup ---
-        const ufoGeometry = new THREE.ConeGeometry(0.8, 0.3, 16);
-        const ufoMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.8, roughness: 0.4 });
-        const ufo = new THREE.Mesh(ufoGeometry, ufoMaterial);
-        ufo.rotation.x = Math.PI;
-        scene.add(ufo);
+                playerWidth = Math.max(25, Math.min(50, gameCanvas.height * 0.08));
+                playerHeight = playerWidth;
+                bugSize = Math.max(20, Math.min(45, gameCanvas.height * 0.07));
+                bossSize = Math.max(40, Math.min(70, gameCanvas.height * 0.12)); // Scale boss size
 
-        const bugGeometry = new THREE.SphereGeometry(0.2, 8, 8);
-        const bugMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-        const bug = new THREE.Mesh(bugGeometry, bugMaterial);
-        scene.add(bug);
+                bugSpeedBase = gameCanvas.height * 0.002 * (1 + difficultyLevel * 0.1);
+                bugSpeed = bugSpeedBase;
 
-        // UFO/Bug Animation Variables
-        let bugTargetPosition = new THREE.Vector3(
-             THREE.MathUtils.randFloatSpread(40),
-             THREE.MathUtils.randFloat(-20, 20),
-             THREE.MathUtils.randFloat(5, 25)
-        );
-        const bugSpeed = 0.05;
-        const ufoChaseSpeed = 0.03;
-        let bugMoveTimer = 0;
-        const bugMoveInterval = 100;
+                createStars(100); // Recreate stars on resize
 
-        // --- Camera Position ---
-        camera.position.z = 50;
+                if (player.x) {
+                    player.x = gameCanvas.width / 2 - playerWidth / 2;
+                    player.y = gameCanvas.height - playerHeight - 10;
+                    player.width = playerWidth;
+                    player.height = playerHeight;
+                }
+                 if (bossActive && boss) { // Reposition active boss
+                     boss.x = Math.min(boss.x, gameCanvas.width - boss.size);
+                     boss.y = Math.min(boss.y, gameCanvas.height * 0.3); // Keep boss in upper part
+                     boss.size = bossSize;
+                 }
+            }
 
-        // --- Animation Loop ---
-        function animate() {
-            requestAnimationFrame(animate);
+            function initGame() {
+                difficultyLevel = 0;
+                difficultyThreshold = 200;
+                bugSpawnIntervalBase = 90;
+                bugSpawnInterval = bugSpawnIntervalBase;
+                bossIncoming = false;
+                bossActive = false;
+                boss = null; // Reset boss object
 
-            // --- Rain Animation ---
-            const positionsAttribute = particlesGeometry.getAttribute('position');
-            const colorsAttribute = particlesGeometry.getAttribute('color');
-            const currentPositions = positionsAttribute.array;
-            const currentColors = colorsAttribute.array;
+                resizeGameCanvas(); // Sets initial size, emoji sizes, base speed, and stars
 
-            for (let i = 0; i < particleCount; i++) {
-                const i3 = i * 3;
-                const velocityInfo = velocities[i];
-                currentPositions[i3 + 1] -= velocityInfo.speed;
+                score = 0;
+                lasers = [];
+                bugs = [];
+                bossLasers = [];
+                bugSpawnTimer = 0;
+                gameOver = false;
+                scoreDisplay.textContent = `Score: ${score}`;
+                gameOverMessage.style.display = 'none';
+                tryAgainButton.style.display = 'none'; // Hide try again button
 
-                let color;
-                if (velocityInfo.isLeading) {
-                    color = white;
+                player = {
+                    x: gameCanvas.width / 2 - playerWidth / 2,
+                    y: gameCanvas.height - playerHeight - 10,
+                    width: playerWidth,
+                    height: playerHeight,
+                    speed: 6,
+                    laserCooldown: 12,
+                    laserTimer: 0,
+                    lives: initialLives
+                };
+                keys = {};
+                drawLives(); // Initial draw of life bar
+
+                if (gameAnimationId) cancelAnimationFrame(gameAnimationId);
+                gameLoop();
+            }
+
+            // --- Drawing Functions ---
+            function drawPlayer() {
+                ctx.font = `${player.height}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🛸', player.x + player.width / 2, player.y + player.height / 2);
+            }
+
+            function drawLaser(laser) {
+                ctx.fillStyle = '#00FF41'; // Player laser color
+                ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
+            }
+
+             function drawBossLaser(laser) {
+                ctx.fillStyle = '#FF8C00'; // Boss laser color (e.g., orange)
+                ctx.fillRect(laser.x, laser.y, laser.width, laser.height);
+            }
+
+            function drawBug(bug) {
+                ctx.font = `${bug.size}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('👾', bug.x + bug.size / 2, bug.y + bug.size / 2);
+            }
+
+            function drawBoss() {
+                if (!bossActive || !boss) return;
+                ctx.font = `${boss.size}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('👽', boss.x + boss.size / 2, boss.y + boss.size / 2);
+
+                // Draw boss health bar
+                const barWidth = boss.size * 0.8;
+                const barHeight = 8;
+                const barX = boss.x + (boss.size - barWidth) / 2;
+                const barY = boss.y - barHeight - 5; // Above the boss
+                const healthPercent = boss.health / boss.maxHealth;
+
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.7)'; // Red background
+                ctx.fillRect(barX, barY, barWidth, barHeight);
+                ctx.fillStyle = '#00FF00'; // Green health
+                ctx.fillRect(barX, barY, barWidth * healthPercent, barHeight);
+                ctx.strokeStyle = '#FFF'; // White border
+                ctx.strokeRect(barX, barY, barWidth, barHeight);
+            }
+
+            function drawLives() {
+                // Update the width of the inner life bar element
+                const lifePercent = Math.max(0, player.lives / initialLives) * 100;
+                lifeBarInner.style.width = `${lifePercent}%`;
+            }
+
+            // --- Update Functions ---
+            function increaseDifficulty() {
+                 difficultyLevel++;
+                 difficultyThreshold += 200;
+                 bugSpeedBase = gameCanvas.height * 0.002 * (1 + difficultyLevel * 0.1);
+                 bugSpawnIntervalBase = Math.max(25, bugSpawnIntervalBase - 4);
+                 console.log(`Level Up! Level: ${difficultyLevel}, Score Threshold: ${difficultyThreshold}`);
+
+                 // Trigger boss spawn
+                 bossIncoming = true;
+            }
+
+            function fireLaser() {
+                if (player.laserTimer <= 0) {
+                    const laserHeight = 15;
+                    lasers.push({
+                        x: player.x + player.width / 2 - 2,
+                        y: player.y - 5,
+                        width: 4,
+                        height: laserHeight,
+                        speed: 8
+                    });
+                    player.laserTimer = player.laserCooldown;
+                }
+            }
+
+            function updatePlayer() {
+                if (player.laserTimer > 0) player.laserTimer--;
+                if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
+                if (keys['ArrowRight'] && player.x < gameCanvas.width - player.width) player.x += player.speed;
+                if (keys[' '] || keys['Fire']) fireLaser();
+            }
+
+            function updateLasers(laserArray, speedMultiplier = 1) {
+                for (let i = laserArray.length - 1; i >= 0; i--) {
+                    laserArray[i].y += laserArray[i].speed * speedMultiplier; // Use multiplier for direction
+                    if (laserArray[i].y < -laserArray[i].height || laserArray[i].y > gameCanvas.height) {
+                        laserArray.splice(i, 1);
+                    }
+                }
+            }
+
+            function spawnBug() {
+                 // Don't spawn regular bugs if a boss is incoming or active
+                 if (bossIncoming || bossActive) return;
+
+                 bugSpawnTimer++;
+                 if (bugSpawnTimer >= bugSpawnInterval) {
+                    const x = Math.random() * (gameCanvas.width - bugSize);
+                    bugs.push({ x: x, y: -bugSize, size: bugSize, speed: bugSpeed });
+                    bugSpawnTimer = 0;
+                    bugSpeed = bugSpeedBase + Math.random() * 0.5;
+                    bugSpawnInterval = bugSpawnIntervalBase - Math.random() * 10;
+                 }
+            }
+
+            function updateBugs() {
+                for (let i = bugs.length - 1; i >= 0; i--) {
+                    const bug = bugs[i];
+                    bug.y += bug.speed;
+
+                    // Collision check: Bug vs Player
+                    const playerHitbox = { x: player.x + player.width * 0.1, y: player.y + player.height * 0.1, width: player.width * 0.8, height: player.height * 0.8 };
+                    const bugHitbox = { x: bug.x + bug.size * 0.1, y: bug.y + bug.size * 0.1, width: bug.size * 0.8, height: bug.size * 0.8 };
+
+                    if (
+                        bugHitbox.x < playerHitbox.x + playerHitbox.width &&
+                        bugHitbox.x + bugHitbox.width > playerHitbox.x &&
+                        bugHitbox.y < playerHitbox.y + playerHitbox.height &&
+                        bugHitbox.y + bugHitbox.height > playerHitbox.y
+                    ) {
+                        bugs.splice(i, 1);
+                        player.lives--;
+                        drawLives(); // Update life bar display
+
+                        if (player.lives <= 0) {
+                            gameOver = true;
+                            break;
+                        }
+                    }
+                    else if (bug.y > gameCanvas.height) {
+                         bugs.splice(i, 1);
+                    }
+                }
+            }
+
+             function spawnBoss() {
+                 console.log("Spawning Boss for Level", difficultyLevel);
+                 bossIncoming = false; // Reset flag
+                 bossActive = true;
+                 bugs = []; // Clear existing bugs
+                 bossLasers = []; // Clear boss lasers
+
+                 let bossHealth = 50 + difficultyLevel * 20; // Scale health
+                 let bossSpeed = 2 + difficultyLevel * 0.5;
+                 let bossShootInterval = Math.max(30, 60 - difficultyLevel * 5);
+
+                 // Final boss adjustments (example)
+                 if (difficultyLevel >= finalLevel) {
+                     console.log("FINAL BOSS!");
+                     bossHealth *= 2;
+                     bossSpeed *= 1.5;
+                     bossShootInterval = Math.max(20, bossShootInterval - 10);
+                 }
+
+
+                 boss = {
+                     x: gameCanvas.width / 2 - bossSize / 2,
+                     y: 50,
+                     size: bossSize,
+                     speed: bossSpeed,
+                     direction: 1, // 1 for right, -1 for left
+                     health: bossHealth,
+                     maxHealth: bossHealth,
+                     shootTimer: 0,
+                     shootInterval: bossShootInterval // Frames between shots
+                 };
+             }
+
+             function updateBoss() {
+                 if (!bossActive || !boss) return;
+
+                 // Movement: Simple side-to-side
+                 boss.x += boss.speed * boss.direction;
+                 if (boss.x <= 0 || boss.x + boss.size >= gameCanvas.width) {
+                     boss.direction *= -1; // Reverse direction at edges
+                     boss.x = Math.max(0, Math.min(boss.x, gameCanvas.width - boss.size)); // Clamp position
+                 }
+
+                 // Shooting
+                 boss.shootTimer++;
+                 if (boss.shootTimer >= boss.shootInterval) {
+                     const laserWidth = 5;
+                     const laserHeight = 15;
+                     bossLasers.push({
+                         x: boss.x + boss.size / 2 - laserWidth / 2,
+                         y: boss.y + boss.size, // Start below boss
+                         width: laserWidth,
+                         height: laserHeight,
+                         speed: 4 + difficultyLevel * 0.3 // Boss laser speed scales
+                     });
+                     boss.shootTimer = 0;
+                 }
+             }
+
+            // --- Collision Detection ---
+            function checkCollisions() {
+                // 1. Player Lasers vs Bugs
+                for (let i = lasers.length - 1; i >= 0; i--) {
+                    const laser = lasers[i];
+                    if (laser.y < -laser.height) continue; // Skip off-screen lasers
+
+                    for (let j = bugs.length - 1; j >= 0; j--) {
+                        const bug = bugs[j];
+                        const bugHitbox = { x: bug.x + bug.size * 0.1, y: bug.y + bug.size * 0.1, width: bug.size * 0.8, height: bug.size * 0.8 };
+
+                        if (
+                            laser.x < bugHitbox.x + bugHitbox.width && laser.x + laser.width > bugHitbox.x &&
+                            laser.y < bugHitbox.y + bugHitbox.height && laser.y + laser.height > bugHitbox.y
+                        ) {
+                            lasers.splice(i, 1);
+                            bugs.splice(j, 1);
+                            score += 10;
+                            scoreDisplay.textContent = `Score: ${score}`;
+                            if (score >= difficultyThreshold && !bossActive && !bossIncoming) {
+                                increaseDifficulty(); // Trigger level up / boss incoming
+                            }
+                            break; // Laser hit one bug
+                        }
+                    }
+                }
+
+                // 2. Player Lasers vs Boss
+                if (bossActive && boss) {
+                     const bossHitbox = { x: boss.x + boss.size * 0.1, y: boss.y + boss.size * 0.1, width: boss.size * 0.8, height: boss.size * 0.8 };
+                     for (let i = lasers.length - 1; i >= 0; i--) {
+                         const laser = lasers[i];
+                         if (
+                            laser.x < bossHitbox.x + bossHitbox.width && laser.x + laser.width > bossHitbox.x &&
+                            laser.y < bossHitbox.y + bossHitbox.height && laser.y + laser.height > bossHitbox.y
+                         ) {
+                             lasers.splice(i, 1); // Remove laser
+                             boss.health -= 10; // Boss takes damage
+                             console.log("Boss Health:", boss.health);
+
+                             if (boss.health <= 0) {
+                                 console.log("Boss Defeated!");
+                                 score += 100 * difficultyLevel; // Bonus points for boss
+                                 scoreDisplay.textContent = `Score: ${score}`;
+                                 bossActive = false;
+                                 boss = null;
+                                 // Check if it was the final boss
+                                 if (difficultyLevel >= finalLevel) {
+                                     // Implement a win state? For now, just continue
+                                     console.log("Final Boss Defeated! You Win (for now)!");
+                                     // Maybe stop spawning anything else? Or trigger credits?
+                                 }
+                                 // Check if next difficulty threshold was already passed
+                                 if (score >= difficultyThreshold && !bossActive && !bossIncoming) {
+                                      increaseDifficulty();
+                                 }
+                                 break; // Exit laser loop after boss defeat
+                             }
+                         }
+                     }
+                }
+
+
+                // 3. Boss Lasers vs Player
+                 const playerHitbox = { x: player.x + player.width * 0.1, y: player.y + player.height * 0.1, width: player.width * 0.8, height: player.height * 0.8 };
+                 for (let i = bossLasers.length - 1; i >= 0; i--) {
+                     const laser = bossLasers[i];
+                     if (
+                        laser.x < playerHitbox.x + playerHitbox.width && laser.x + laser.width > playerHitbox.x &&
+                        laser.y < playerHitbox.y + playerHitbox.height && laser.y + laser.height > playerHitbox.y
+                     ) {
+                         bossLasers.splice(i, 1); // Remove boss laser
+                         player.lives--;
+                         drawLives();
+                         if (player.lives <= 0) {
+                             gameOver = true;
+                             break; // Exit loop
+                         }
+                     }
+                 }
+            }
+
+            // --- Game Loop ---
+            function gameLoop() {
+                if (gameOver) {
+                    gameOverMessage.style.display = 'block';
+                    tryAgainButton.style.display = 'inline-block'; // Show try again button
+                    // Removed automatic tap/enter restart, rely on button
+                    return;
+                }
+
+                gameAnimationId = requestAnimationFrame(gameLoop);
+                ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+                // Background first
+                updateStars();
+                drawStars();
+
+                // Updates
+                updatePlayer();
+                updateLasers(lasers, -1); // Player lasers move up (negative speed multiplier)
+
+                if (bossActive) {
+                    updateBoss();
+                    updateLasers(bossLasers, 1); // Boss lasers move down (positive speed multiplier)
+                } else if (bossIncoming) {
+                     spawnBoss(); // Spawn the boss if flag is set
                 } else {
-                    const yPos = currentPositions[i3 + 1];
-                    const streamProgress = THREE.MathUtils.mapLinear(yPos, 50, -50, 0, 1);
-                    color = matrixGreen.clone().lerp(brightGreen, streamProgress * 0.5);
+                    spawnBug(); // Spawn regular bugs if no boss activity
+                }
+                updateBugs();   // Move bugs and check player collision
+
+                if (gameOver) { // Check again after updates
+                     gameOverMessage.style.display = 'block';
+                     tryAgainButton.style.display = 'inline-block';
+                     cancelAnimationFrame(gameAnimationId);
+                     return;
                 }
 
-                if (currentPositions[i3 + 1] < -50) {
-                    currentPositions[i3 + 1] = 50;
-                    currentPositions[i3] = THREE.MathUtils.randFloatSpread(100);
-                    velocityInfo.isLeading = Math.random() < 1 / streamLength;
-                    velocityInfo.speed = THREE.MathUtils.randFloat(fallSpeed * 0.5, fallSpeed * 1.5);
-                }
+                checkCollisions(); // Check all laser collisions
 
-                currentColors[i3] = color.r;
-                currentColors[i3 + 1] = color.g;
-                currentColors[i3 + 2] = color.b;
+                // Drawings
+                drawPlayer();
+                lasers.forEach(drawLaser);
+                bugs.forEach(drawBug);
+                drawBoss(); // Draw boss if active
+                bossLasers.forEach(drawBossLaser); // Draw boss lasers
+                // Lives are updated via DOM manipulation in drawLives()
             }
-            positionsAttribute.needsUpdate = true;
-            colorsAttribute.needsUpdate = true;
 
-            // --- UFO and Bug Animation ---
-            bugMoveTimer++;
-            if (bugMoveTimer > bugMoveInterval) {
-                bugTargetPosition.set(
-                    THREE.MathUtils.randFloatSpread(40),
-                    THREE.MathUtils.randFloat(-20, 20),
-                    THREE.MathUtils.randFloat(5, 25)
-                );
-                bugMoveTimer = 0;
-            }
-            bug.position.lerp(bugTargetPosition, bugSpeed);
-            ufo.position.lerp(bug.position, ufoChaseSpeed);
-            ufo.rotation.z += 0.02;
-            ufo.rotation.y += 0.01;
+            // --- Event Listeners ---
 
-            renderer.render(scene, camera);
-        }
-
-        // --- Handle Window Resize ---
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-        }
-        window.addEventListener('resize', onWindowResize, false);
-
-        // --- Section Visibility on Scroll ---
-        const sections = document.querySelectorAll('.section');
-        const contentContainer = document.querySelector('.content-container');
-
-        const observerOptions = {
-            root: contentContainer, // Observe within the scrolling container
-            rootMargin: '0px',
-            threshold: 0.1 // Trigger when 10% is visible (adjust as needed)
-        };
-
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                // Add class when intersecting, don't remove (keep visible once scrolled past)
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
+            window.addEventListener('keydown', (e) => {
+                if (document.body.classList.contains('game-active')) {
+                    if (e.key === ' ') e.preventDefault();
+                     keys[e.key] = true;
+                     // Keep Enter for restart if needed, but button is primary
+                     // if (gameOver && e.key === 'Enter') {
+                     //     initGame();
+                     // }
+                 }
             });
-        }, observerOptions);
+            window.addEventListener('keyup', (e) => {
+                 if (document.body.classList.contains('game-active')) {
+                     keys[e.key] = false;
+                 }
+            });
 
-        sections.forEach(section => {
-           observer.observe(section); // Observe all sections
-        });
-
-         // Ensure hero is visible on load without waiting for scroll
-         document.addEventListener('DOMContentLoaded', () => {
-            const heroSection = document.getElementById('hero');
-            if (heroSection) {
-                heroSection.classList.add('visible');
+            function handleTouch(event, key, isPressed) {
+                event.preventDefault();
+                keys[key] = isPressed;
             }
-         });
+            touchLeftButton.addEventListener('touchstart', (e) => handleTouch(e, 'ArrowLeft', true));
+            touchLeftButton.addEventListener('touchend', (e) => handleTouch(e, 'ArrowLeft', false));
+            touchLeftButton.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            touchRightButton.addEventListener('touchstart', (e) => handleTouch(e, 'ArrowRight', true));
+            touchRightButton.addEventListener('touchend', (e) => handleTouch(e, 'ArrowRight', false));
+            touchRightButton.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            touchFireButton.addEventListener('touchstart', (e) => handleTouch(e, 'Fire', true));
+            touchFireButton.addEventListener('touchend', (e) => handleTouch(e, 'Fire', false));
+            touchFireButton.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            // Try Again Button Listener
+            tryAgainButton.addEventListener('click', initGame);
+            tryAgainButton.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // Prevent click event firing too
+                initGame();
+            });
 
 
-        // --- Start Animation ---
-        animate();
+            launchGameButton.addEventListener('click', () => {
+                gameOverlay.classList.add('active');
+                document.body.classList.add('game-active');
+                if (bgAnimationId) { cancelAnimationFrame(bgAnimationId); bgAnimationId = null; }
+                initGame();
+                window.addEventListener('resize', resizeGameCanvas);
+            });
+
+            closeGameButton.addEventListener('click', () => {
+                gameOverlay.classList.remove('active');
+                document.body.classList.remove('game-active');
+                gameOver = true; // Ensure game loop stops
+                if (gameAnimationId) { cancelAnimationFrame(gameAnimationId); gameAnimationId = null; }
+                if (!bgAnimationId) { animateBackground(); }
+                window.removeEventListener('resize', resizeGameCanvas);
+                // No need to remove try again listener as it's inside game over message which hides
+            });
+
+        })(); // End of Space Game IIFE
 
     </script>
 </body>
