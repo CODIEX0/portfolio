@@ -1,12 +1,12 @@
-Proprietary License - Omni Software
+## Proprietary License - Omni Software
 
-Copyright (c) 2025 Sibusiso Ntuli (Omni)
+## Copyright (c) 2025 Sibusiso Ntuli (Omni)
 
 NOTICE: This software is proprietary to Omni and is protected by copyright law and international treaties. Unauthorized copying, modification, distribution, or commercial use is strictly prohibited.
 
 By accessing or using this software, you agree to the following terms and conditions:
 
-1. **Ownership:** This software and its source code are the exclusive property of Sibusiso Ntuli and Omni. All rights not expressly granted herein are reserved.
+1. Ownership: This software and its source code are the exclusive property of Sibusiso Ntuli and Omni. All rights not expressly granted herein are reserved.
 
 2. **Personal Information Respect:** You agree not to attempt to access, collect, store, or misuse any personal information of Sibusiso Ntuli that may be directly or indirectly related to this software.
 
@@ -29,9 +29,7 @@ By accessing or using this software, you agree to the following terms and condit
 
 By using this software, you acknowledge that you have read, understood, and agree to be bound by the terms and conditions of this Proprietary License.
 
----
-
-**Important Considerations:**
+## Important Considerations:
 
 * **Legal Advice:** This is a draft license based on your instructions. **It is strongly recommended that you consult with a legal professional** to ensure this license is legally sound, enforceable in your jurisdiction, and fully protects your intellectual property and personal information according to South African law.
 * **Enforcement:** Enforcing a restrictive license like this can be challenging. You'll need to have mechanisms in place to detect unauthorized use and be prepared to take legal action if necessary.
