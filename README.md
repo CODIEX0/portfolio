@@ -62,10 +62,6 @@ This portfolio website features:
 
 I'm always open to discussing new opportunities, collaborations, or just chatting about technology!
 
-* **LinkedIn:** [linkedin.com/in/sibusiso-n-b55638247](https://linkedin.com/in/sibusiso-n-b55638247)
-* **GitHub:** [github.com/CODIEX0](https://github.com/CODIEX0)
-* **Email:** [codyntuli@gmail.com](mailto:codyntuli@gmail.com)
-
 Feel free to explore the [live portfolio](https://codiex0.github.io/portfolio/) and browse the code in this repository.
 
 
